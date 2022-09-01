@@ -1,0 +1,25 @@
+extends:
+  - plugin:@typescript-eslint/recommended
+rules:
+  '@typescript-eslint/naming-convention':
+    - error
+    - selector: default
+      format:
+        - strictCamelCase
+    - selector: interface
+      format:
+        - StrictPascalCase
+      prefix:
+        - 'I'
+    - selector: class
+      format:
+        - StrictPascalCase
+    - selector: enum
+      format:
+        - StrictPascalCase
+    - selector: enumMember
+      format:
+        - StrictPascalCase
+    - selector: typeLike
+      format:
+        - StrictPascalCase

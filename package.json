@@ -1,0 +1,40 @@
+{
+  "name": "funckly",
+  "version": "0.9.1",
+  "description": "Simple Web API Framework",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "typescript": "^4.7.4",
+    "@types/node": "^18.7.9",
+    "@types/jest": "^28.1.7",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
+    "jest": "^28.1.3",
+    "prettier": "^2.7.1",
+    "eslint": "^8.22.0"
+  },
+  "jest": {
+    "rootDir": "dist",
+    "coverageDirectory": "../coverage/"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "test": "tsc --build && jest --coverage",
+    "conform": "prettier --write \"src\" && eslint \"src\" --fix"
+  },
+  "author": "Luca Nicolini <mithosk85@gmail.com>",
+  "repository": "mithosk/funckly",
+  "license": "Apache-2.0",
+  "keywords": [
+    "framework",
+    "http",
+    "api",
+    "rest",
+    "restful",
+    "functional"
+  ]
+}
