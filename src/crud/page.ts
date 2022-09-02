@@ -1,4 +1,4 @@
-export interface IPage<M> {
+export interface IPage<M extends object> {
 	models: M[]
 	sortType: string
 	pageCount: number

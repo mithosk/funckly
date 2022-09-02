@@ -1,3 +1,3 @@
-export interface INormalize<F> {
+export interface INormalize<F extends object> {
 	(filter: F): void
 }

@@ -5,7 +5,7 @@ import { ICreateController } from './create-controller'
 import { VanillaServer } from '../server/vanilla-server'
 import { HttpMethodHandler } from './http-method-handler'
 
-export class RestUnit<M, F> {
+export class RestUnit<M extends object, F extends object> {
 	private validate: IValidate<M> | undefined = undefined
 	private normalize: INormalize<F> | undefined = undefined
 

@@ -1,5 +1,5 @@
 import { Validator } from '../crud/validator'
 
-export interface IValidate<M> {
+export interface IValidate<M extends object> {
 	(model: M): Validator<M>
 }

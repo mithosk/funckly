@@ -1,6 +1,6 @@
 import { IPage } from './page'
 
-export interface IController<M, F> {
+export interface IController<M extends object, F extends object> {
 	create(model: M, identifiers: { [name: string]: string }): Promise<M>
 	read(identifiers: { [name: string]: string }): Promise<M>
 	update(identifiers: { [name: string]: string }, model: M): Promise<M>

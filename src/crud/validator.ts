@@ -1,6 +1,6 @@
 import { IValue } from './value'
 
-export class Validator<M> {
+export class Validator<M extends object> {
 	private readonly errors: string[] = []
 
 	constructor(private readonly model: M) {}

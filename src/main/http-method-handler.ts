@@ -6,7 +6,7 @@ import { NotFoundError } from '../crud/not-found-error'
 import { IHttpResponse } from '../server/http-response'
 import { ForbiddenError } from '../crud/forbidden-error'
 
-export class HttpMethodHandler<M, F> {
+export class HttpMethodHandler<M extends object, F extends object> {
 	constructor(private readonly controller: IController<M, F>) {}
 
 	public async post(
@@ -25,7 +25,7 @@ export class HttpMethodHandler<M, F> {
 
 				httpResponse.setStatus(201).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(result))
 			} catch (error) {
-				this.manageControllerError(<Error>error, httpResponse)
+				this.manageControllerError(error as Error, httpResponse)
 			}
 		} else {
 			httpResponse.setStatus(400).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(validationErrors))
@@ -40,7 +40,7 @@ export class HttpMethodHandler<M, F> {
 
 			httpResponse.setStatus(200).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(result))
 		} catch (error) {
-			this.manageControllerError(<Error>error, httpResponse)
+			this.manageControllerError(error as Error, httpResponse)
 		}
 	}
 
@@ -60,7 +60,7 @@ export class HttpMethodHandler<M, F> {
 
 				httpResponse.setStatus(200).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(result))
 			} catch (error) {
-				this.manageControllerError(<Error>error, httpResponse)
+				this.manageControllerError(error as Error, httpResponse)
 			}
 		} else {
 			httpResponse.setStatus(400).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(validationErrors))
@@ -89,7 +89,7 @@ export class HttpMethodHandler<M, F> {
 				httpResponse.setStatus(400).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(validationErrors))
 			}
 		} catch (error) {
-			this.manageControllerError(<Error>error, httpResponse)
+			this.manageControllerError(error as Error, httpResponse)
 		}
 	}
 
@@ -101,7 +101,7 @@ export class HttpMethodHandler<M, F> {
 
 			httpResponse.setStatus(204)
 		} catch (error) {
-			this.manageControllerError(<Error>error, httpResponse)
+			this.manageControllerError(error as Error, httpResponse)
 		}
 	}
 
@@ -133,11 +133,11 @@ export class HttpMethodHandler<M, F> {
 				.setHeader('ItemCount', result.itemCount.toString())
 				.setBody(JSON.stringify(result.models))
 		} catch (error) {
-			this.manageControllerError(<Error>error, httpResponse)
+			this.manageControllerError(error as Error, httpResponse)
 		}
 	}
 
-	private deserialize<T>(json: string): T {
+	private deserialize<T extends object>(json: string): T {
 		try {
 			return <T>JSON.parse(json)
 		} catch {

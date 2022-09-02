@@ -8,7 +8,7 @@ export class Application {
 		this.server = new VanillaServer(port)
 	}
 
-	public createRestUnit<M, F>(route: string): RestUnit<M, F> {
+	public createRestUnit<M extends object, F extends object>(route: string): RestUnit<M, F> {
 		return new RestUnit<M, F>(this.server, route)
 	}
 }
