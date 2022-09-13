@@ -1,9 +1,11 @@
 import { IValidate } from './validate'
 import { INormalize } from './normalize'
 import { HttpMethod } from '../server/http-method'
+import { TypedHttpRequest } from './typed-http-request'
 import { ICreateController } from './create-controller'
 import { VanillaServer } from '../server/vanilla-server'
 import { HttpMethodHandler } from './http-method-handler'
+import { TypedHttpResponse } from './typed-http-response'
 
 export class RestUnit<M extends object, F extends object> {
 	private validate: IValidate<M> | undefined = undefined
@@ -14,43 +16,47 @@ export class RestUnit<M extends object, F extends object> {
 	public setController(createController: ICreateController<M, F>): RestUnit<M, F> {
 		this.server.subscribe(this.route, async (httpMethod, httpRequest, httpResponse) => {
 			const httpMethodHandler = new HttpMethodHandler(createController())
+			const typedHttpRequest = new TypedHttpRequest(httpRequest)
+			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 
 			switch (httpMethod) {
 				case HttpMethod.Post:
-					await httpMethodHandler.post(httpRequest, httpResponse, this.validate)
+					await httpMethodHandler.post(typedHttpRequest, typedHttpResponse, this.validate)
 					break
 
 				case HttpMethod.Get:
-					await httpMethodHandler.getMany(httpRequest, httpResponse, this.normalize)
+					await httpMethodHandler.getMany(typedHttpRequest, typedHttpResponse, this.normalize)
 					break
 
 				default:
-					httpResponse.setStatus(404).setBody('method not found')
+					typedHttpResponse.setStatus(404).setBody(['method not found'])
 			}
 		})
 
 		this.server.subscribe(this.route + '/{id}', async (httpMethod, httpRequest, httpResponse) => {
 			const httpMethodHandler = new HttpMethodHandler(createController())
+			const typedHttpRequest = new TypedHttpRequest(httpRequest)
+			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 
 			switch (httpMethod) {
 				case HttpMethod.Get:
-					await httpMethodHandler.getOne(httpRequest, httpResponse)
+					await httpMethodHandler.getOne(typedHttpRequest, typedHttpResponse)
 					break
 
 				case HttpMethod.Put:
-					await httpMethodHandler.put(httpRequest, httpResponse, this.validate)
+					await httpMethodHandler.put(typedHttpRequest, typedHttpResponse, this.validate)
 					break
 
 				case HttpMethod.Patch:
-					await httpMethodHandler.patch(httpRequest, httpResponse, this.validate)
+					await httpMethodHandler.patch(typedHttpRequest, typedHttpResponse, this.validate)
 					break
 
 				case HttpMethod.Delete:
-					await httpMethodHandler.delete(httpRequest, httpResponse)
+					await httpMethodHandler.delete(typedHttpRequest, typedHttpResponse)
 					break
 
 				default:
-					httpResponse.setStatus(404).setBody('method not found')
+					typedHttpResponse.setStatus(404).setBody(['method not found'])
 			}
 		})
 

@@ -1,287 +1,330 @@
-import { IPage } from '../crud/page'
-import { IValidate } from './validate'
-import { INormalize } from './normalize'
-import { Validator } from '../crud/validator'
+import { IValidator } from '../crud/validator'
 import { IController } from '../crud/controller'
-import { HttpRequest } from '../server/http-request'
 import { NotFoundError } from '../crud/not-found-error'
-import { IHttpResponse } from '../server/http-response'
 import { ForbiddenError } from '../crud/forbidden-error'
+import { ITypedHttpRequest } from './typed-http-request'
 import { HttpMethodHandler } from './http-method-handler'
+import { ITypedHttpResponse } from './typed-http-response'
 
-class FakeModel {
-	cat: string | undefined
-	dog: number | undefined
-	tiger: string | undefined
-}
-
-class FakeFilter {
-	lion: string | undefined
-	crocodile: number | undefined
-	horse: string | undefined
-}
-
-class FakeController implements IController<FakeModel, FakeFilter> {
-	public async create(model: FakeModel, identifiers: { [name: string]: string }): Promise<FakeModel> {
-		this.throwControllerError(identifiers)
-
-		return { ...model }
+describe('HttpMethodHandler', () => {
+	class FakeModel {
+		cat: string | undefined
+		dog: number | undefined
+		tiger: string | undefined
 	}
 
-	public async read(identifiers: { [name: string]: string }): Promise<FakeModel> {
-		this.throwControllerError(identifiers)
+	class FakeFilter {
+		lion: string | undefined
+	}
 
-		return {
-			cat: 'aaa',
-			dog: 111,
-			tiger: 'bbb'
+	let controller: jest.Mocked<IController<FakeModel, FakeFilter>>
+	let request: jest.Mocked<ITypedHttpRequest>
+	let response: jest.Mocked<ITypedHttpResponse>
+	let validator: jest.Mocked<IValidator<FakeModel>>
+
+	beforeEach(() => {
+		controller = {
+			create: jest.fn(),
+			read: jest.fn(),
+			update: jest.fn(),
+			delete: jest.fn(),
+			list: jest.fn()
 		}
-	}
 
-	public async update(identifiers: { [name: string]: string }, model: FakeModel): Promise<FakeModel> {
-		this.throwControllerError(identifiers)
-
-		return { ...model }
-	}
-
-	public async delete(identifiers: { [name: string]: string }): Promise<void> {
-		this.throwControllerError(identifiers)
-	}
-
-	public async list(identifiers: { [name: string]: string }): Promise<IPage<FakeModel>> {
-		this.throwControllerError(identifiers)
-
-		return {
-			models: [
-				{
-					cat: 'aaa',
-					dog: 111,
-					tiger: 'bbb'
-				},
-				{
-					cat: 'ccc',
-					dog: 222,
-					tiger: 'ddd'
-				}
-			],
-			sortType: 'cat-asc',
-			pageCount: 10,
-			itemCount: 100
+		request = {
+			getIdentifiers: jest.fn(),
+			getFilter: jest.fn(),
+			getStringHeader: jest.fn(),
+			getIntHeader: jest.fn(),
+			getBody: jest.fn()
 		}
-	}
 
-	private throwControllerError(identifiers: { [name: string]: string }): void {
-		switch (identifiers['error']) {
-			case '403':
-				throw new ForbiddenError('forbidden')
-
-			case '404':
-				throw new NotFoundError('not found')
-
-			case '500':
-				throw new Error('generic')
+		response = {
+			setStatus: jest.fn(),
+			setStandardHeader: jest.fn(),
+			setCustomHeader: jest.fn(),
+			setBody: jest.fn()
 		}
-	}
-}
 
-class FakeHttpResponse implements IHttpResponse {
-	public status: number | undefined = undefined
-	public headers: { [name: string]: string } = {}
-	public body: string | undefined = undefined
-
-	public setStatus(code: number): IHttpResponse {
-		this.status = code
-
-		return this
-	}
-
-	public setHeader(name: string, value: string): IHttpResponse {
-		this.headers[name] = value
-
-		return this
-	}
-
-	public setBody(body: string): void {
-		this.body = body
-	}
-}
-
-describe('post', () => {
-	it('sets the status to 201', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
-
-		const httpRequest = new HttpRequest({}, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model => new Validator(model)
-
-		await httpMethodHandler.post(httpRequest, httpResponse, validate)
-
-		expect(httpResponse.status).toBe(201)
+		validator = {
+			notEmpty: jest.fn(),
+			getErrors: jest.fn()
+		}
 	})
 
-	it('sets the status to 400', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+	describe('post', () => {
+		it('sets the status to 201', async () => {
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
-		const httpRequest = new HttpRequest({}, '', {}, '{"cat":"aaa","dog":111}')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model => new Validator(model).notEmpty(fma => fma.tiger, 'empty tiger')
+			await new HttpMethodHandler(controller).post(request, response, undefined)
 
-		await httpMethodHandler.post(httpRequest, httpResponse, validate)
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(201)
+		})
 
-		expect(httpResponse.status).toBe(400)
+		it('sets the status to 400', async () => {
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+			validator.getErrors.mockReturnValue(['xxx'])
+
+			await new HttpMethodHandler(controller).post(request, response, () => validator)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(400)
+		})
+
+		it('sets the status to 403', async () => {
+			controller.create.mockImplementation(() => {
+				throw new ForbiddenError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).post(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(403)
+		})
+
+		it('sets the status to 500', async () => {
+			controller.create.mockImplementation(() => {
+				throw new Error('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).post(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(500)
+		})
 	})
 
-	it('sets the status to 403', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+	describe('getOne', () => {
+		it('sets the status to 200', async () => {
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
-		const httpRequest = new HttpRequest({ error: '403' }, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model => new Validator(model)
+			await new HttpMethodHandler(controller).getOne(request, response)
 
-		await httpMethodHandler.post(httpRequest, httpResponse, validate)
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(200)
+		})
 
-		expect(httpResponse.status).toBe(403)
+		it('sets the status to 404', async () => {
+			controller.read.mockImplementation(() => {
+				throw new NotFoundError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).getOne(request, response)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(404)
+		})
+
+		it('sets the status to 500', async () => {
+			controller.read.mockImplementation(() => {
+				throw new Error('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).getOne(request, response)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(500)
+		})
 	})
 
-	it('sets the status to 500', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+	describe('put', () => {
+		it('sets the status to 200', async () => {
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
-		const httpRequest = new HttpRequest({ error: '500' }, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model => new Validator(model)
+			await new HttpMethodHandler(controller).put(request, response, undefined)
 
-		await httpMethodHandler.post(httpRequest, httpResponse, validate)
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(200)
+		})
 
-		expect(httpResponse.status).toBe(500)
-	})
-})
+		it('sets the status to 400', async () => {
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+			validator.getErrors.mockReturnValue(['xxx'])
 
-describe('getOne', () => {
-	it('sets the status to 200', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+			await new HttpMethodHandler(controller).put(request, response, () => validator)
 
-		const httpRequest = new HttpRequest({}, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(400)
+		})
 
-		await httpMethodHandler.getOne(httpRequest, httpResponse)
+		it('sets the status to 403', async () => {
+			controller.update.mockImplementation(() => {
+				throw new ForbiddenError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
 
-		expect(httpResponse.status).toBe(200)
-	})
+			await new HttpMethodHandler(controller).put(request, response, undefined)
 
-	it('sets the status to 404', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(403)
+		})
 
-		const httpRequest = new HttpRequest({ error: '404' }, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
+		it('sets the status to 404', async () => {
+			controller.update.mockImplementation(() => {
+				throw new NotFoundError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
 
-		await httpMethodHandler.getOne(httpRequest, httpResponse)
+			await new HttpMethodHandler(controller).put(request, response, undefined)
 
-		expect(httpResponse.status).toBe(404)
-	})
-})
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(404)
+		})
 
-describe('put', () => {
-	it('sets the status to 200', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+		it('sets the status to 500', async () => {
+			controller.update.mockImplementation(() => {
+				throw new Error('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
 
-		const httpRequest = new HttpRequest({}, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model => new Validator(model)
+			await new HttpMethodHandler(controller).put(request, response, undefined)
 
-		await httpMethodHandler.put(httpRequest, httpResponse, validate)
-
-		expect(httpResponse.status).toBe(200)
-	})
-
-	it('sets the status to 400', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
-
-		const httpRequest = new HttpRequest({}, '', {}, '{"cat":"aaa","dog":111}')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model => new Validator(model).notEmpty(fma => fma.tiger, 'empty tiger')
-
-		await httpMethodHandler.put(httpRequest, httpResponse, validate)
-
-		expect(httpResponse.status).toBe(400)
-	})
-})
-
-describe('patch', () => {
-	it('sets the status to 200', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
-
-		const httpRequest = new HttpRequest({}, '', {}, '{"cat":"xxx"}')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model =>
-			new Validator(model)
-				.notEmpty(fma => fma.cat, 'empty cat')
-				.notEmpty(fma => fma.dog, 'empty dog')
-				.notEmpty(fma => fma.tiger, 'empty tiger')
-
-		await httpMethodHandler.patch(httpRequest, httpResponse, validate)
-
-		expect(httpResponse.status).toBe(200)
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(500)
+		})
 	})
 
-	it('sets the status to 400', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+	describe('patch', () => {
+		it('sets the status to 200', async () => {
+			controller.read.mockResolvedValue({ cat: undefined, dog: undefined, tiger: undefined })
+			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: undefined })
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
-		const httpRequest = new HttpRequest({}, '', {}, '{"cat":null}')
-		const httpResponse = new FakeHttpResponse()
-		const validate: IValidate<FakeModel> = model => new Validator(model).notEmpty(fma => fma.cat, 'empty cat')
+			await new HttpMethodHandler(controller).patch(request, response, undefined)
 
-		await httpMethodHandler.patch(httpRequest, httpResponse, validate)
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(200)
+		})
 
-		expect(httpResponse.status).toBe(400)
+		it('sets the status to 400', async () => {
+			controller.read.mockResolvedValue({ cat: undefined, dog: undefined, tiger: undefined })
+			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: undefined })
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+			validator.getErrors.mockReturnValue(['xxx'])
+
+			await new HttpMethodHandler(controller).patch(request, response, () => validator)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(400)
+		})
+
+		it('sets the status to 403', async () => {
+			controller.read.mockImplementation(() => {
+				throw new ForbiddenError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).patch(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(403)
+		})
+
+		it('sets the status to 404', async () => {
+			controller.read.mockImplementation(() => {
+				throw new NotFoundError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).patch(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(404)
+		})
+
+		it('sets the status to 500', async () => {
+			controller.read.mockImplementation(() => {
+				throw new Error('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).patch(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(500)
+		})
 	})
-})
 
-describe('delete', () => {
-	it('sets the status to 204', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+	describe('delete', () => {
+		it('sets the status to 204', async () => {
+			await new HttpMethodHandler(controller).delete(request, response)
 
-		const httpRequest = new HttpRequest({}, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(204)
+		})
 
-		await httpMethodHandler.delete(httpRequest, httpResponse)
+		it('sets the status to 403', async () => {
+			controller.delete.mockImplementation(() => {
+				throw new ForbiddenError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
 
-		expect(httpResponse.status).toBe(204)
+			await new HttpMethodHandler(controller).delete(request, response)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(403)
+		})
+
+		it('sets the status to 404', async () => {
+			controller.delete.mockImplementation(() => {
+				throw new NotFoundError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).delete(request, response)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(404)
+		})
+
+		it('sets the status to 500', async () => {
+			controller.delete.mockImplementation(() => {
+				throw new Error('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).delete(request, response)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(500)
+		})
 	})
-})
 
-describe('getMany', () => {
-	it('sets the status to 200', async () => {
-		const httpMethodHandler = new HttpMethodHandler<FakeModel, FakeFilter>(new FakeController())
+	describe('getMany', () => {
+		it('sets the status to 200', async () => {
+			controller.list.mockResolvedValue({ models: [], sortType: 'xxx', pageCount: 1, itemCount: 10 })
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+			response.setCustomHeader.mockReturnValue(response)
 
-		const httpRequest = new HttpRequest({}, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
-		const normalize: INormalize<FakeFilter> = () => undefined
+			await new HttpMethodHandler(controller).getMany(request, response, undefined)
 
-		await httpMethodHandler.getMany(httpRequest, httpResponse, normalize)
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(200)
+		})
 
-		expect(httpResponse.status).toBe(200)
-	})
+		it('sets the status to 500', async () => {
+			controller.list.mockImplementation(() => {
+				throw new Error('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
 
-	it('sets the status to 200 without normalization', async () => {
-		const httpMethodHandler = new HttpMethodHandler(new FakeController())
+			await new HttpMethodHandler(controller).getMany(request, response, undefined)
 
-		const httpRequest = new HttpRequest({}, '', {}, '')
-		const httpResponse = new FakeHttpResponse()
-
-		await httpMethodHandler.getMany(httpRequest, httpResponse, undefined)
-
-		expect(httpResponse.status).toBe(200)
-	})
-
-	it('sets the status to 200 with pagination params', async () => {
-		const httpMethodHandler = new HttpMethodHandler<FakeModel, FakeFilter>(new FakeController())
-
-		const httpRequest = new HttpRequest({}, '', { pageindex: '2', pagesize: '30' }, '')
-		const httpResponse = new FakeHttpResponse()
-		const normalize: INormalize<FakeFilter> = () => undefined
-
-		await httpMethodHandler.getMany(httpRequest, httpResponse, normalize)
-
-		expect(httpResponse.status).toBe(200)
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(500)
+		})
 	})
 })

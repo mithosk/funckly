@@ -1,20 +1,20 @@
 import { IValidate } from './validate'
 import { INormalize } from './normalize'
 import { IController } from '../crud/controller'
-import { HttpRequest } from '../server/http-request'
 import { NotFoundError } from '../crud/not-found-error'
-import { IHttpResponse } from '../server/http-response'
 import { ForbiddenError } from '../crud/forbidden-error'
+import { ITypedHttpRequest } from './typed-http-request'
+import { ITypedHttpResponse } from './typed-http-response'
 
 export class HttpMethodHandler<M extends object, F extends object> {
 	constructor(private readonly controller: IController<M, F>) {}
 
 	public async post(
-		httpRequest: HttpRequest,
-		httpResponse: IHttpResponse,
+		httpRequest: ITypedHttpRequest,
+		httpResponse: ITypedHttpResponse,
 		validate: IValidate<M> | undefined
 	): Promise<void> {
-		const model = this.deserialize<M>(httpRequest.getBody())
+		const model = httpRequest.getBody<M>()
 		const identifiers = httpRequest.getIdentifiers()
 
 		const validationErrors = validate ? validate(model).getErrors() : []
@@ -23,34 +23,34 @@ export class HttpMethodHandler<M extends object, F extends object> {
 			try {
 				const result = await this.controller.create(model, identifiers)
 
-				httpResponse.setStatus(201).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(result))
+				httpResponse.setStatus(201).setStandardHeader('content-type-json').setBody(result)
 			} catch (error) {
 				this.manageControllerError(error as Error, httpResponse)
 			}
 		} else {
-			httpResponse.setStatus(400).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(validationErrors))
+			httpResponse.setStatus(400).setStandardHeader('content-type-json').setBody(validationErrors)
 		}
 	}
 
-	public async getOne(httpRequest: HttpRequest, httpResponse: IHttpResponse): Promise<void> {
+	public async getOne(httpRequest: ITypedHttpRequest, httpResponse: ITypedHttpResponse): Promise<void> {
 		const identifiers = httpRequest.getIdentifiers()
 
 		try {
 			const result = await this.controller.read(identifiers)
 
-			httpResponse.setStatus(200).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(result))
+			httpResponse.setStatus(200).setStandardHeader('content-type-json').setBody(result)
 		} catch (error) {
 			this.manageControllerError(error as Error, httpResponse)
 		}
 	}
 
 	public async put(
-		httpRequest: HttpRequest,
-		httpResponse: IHttpResponse,
+		httpRequest: ITypedHttpRequest,
+		httpResponse: ITypedHttpResponse,
 		validate: IValidate<M> | undefined
 	): Promise<void> {
 		const identifiers = httpRequest.getIdentifiers()
-		const model = this.deserialize<M>(httpRequest.getBody())
+		const model = httpRequest.getBody<M>()
 
 		const validationErrors = validate ? validate(model).getErrors() : []
 
@@ -58,22 +58,22 @@ export class HttpMethodHandler<M extends object, F extends object> {
 			try {
 				const result = await this.controller.update(identifiers, model)
 
-				httpResponse.setStatus(200).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(result))
+				httpResponse.setStatus(200).setStandardHeader('content-type-json').setBody(result)
 			} catch (error) {
 				this.manageControllerError(error as Error, httpResponse)
 			}
 		} else {
-			httpResponse.setStatus(400).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(validationErrors))
+			httpResponse.setStatus(400).setStandardHeader('content-type-json').setBody(validationErrors)
 		}
 	}
 
 	public async patch(
-		httpRequest: HttpRequest,
-		httpResponse: IHttpResponse,
+		httpRequest: ITypedHttpRequest,
+		httpResponse: ITypedHttpResponse,
 		validate: IValidate<M> | undefined
 	): Promise<void> {
 		const identifiers = httpRequest.getIdentifiers()
-		const partialModel = this.deserialize<M>(httpRequest.getBody())
+		const partialModel = httpRequest.getBody<M>()
 
 		try {
 			const model = await this.controller.read(identifiers)
@@ -84,16 +84,16 @@ export class HttpMethodHandler<M extends object, F extends object> {
 			if (validationErrors.length === 0) {
 				const result = await this.controller.update(identifiers, model)
 
-				httpResponse.setStatus(200).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(result))
+				httpResponse.setStatus(200).setStandardHeader('content-type-json').setBody(result)
 			} else {
-				httpResponse.setStatus(400).setHeader('Content-Type', 'application/json').setBody(JSON.stringify(validationErrors))
+				httpResponse.setStatus(400).setStandardHeader('content-type-json').setBody(validationErrors)
 			}
 		} catch (error) {
 			this.manageControllerError(error as Error, httpResponse)
 		}
 	}
 
-	public async delete(httpRequest: HttpRequest, httpResponse: IHttpResponse): Promise<void> {
+	public async delete(httpRequest: ITypedHttpRequest, httpResponse: ITypedHttpResponse): Promise<void> {
 		const identifiers = httpRequest.getIdentifiers()
 
 		try {
@@ -106,18 +106,18 @@ export class HttpMethodHandler<M extends object, F extends object> {
 	}
 
 	public async getMany(
-		httpRequest: HttpRequest,
-		httpResponse: IHttpResponse,
+		httpRequest: ITypedHttpRequest,
+		httpResponse: ITypedHttpResponse,
 		normalize: INormalize<F> | undefined
 	): Promise<void> {
 		const identifiers = httpRequest.getIdentifiers()
-		const filter = this.deserialize<F>(httpRequest.getFilter())
-		const sortType = httpRequest.getHeader('sorttype')
-		let pageIndex = parseInt(httpRequest.getHeader('pageindex'))
-		let pageSize = parseInt(httpRequest.getHeader('pagesize'))
+		const filter = httpRequest.getFilter<F>()
+		const sortType = httpRequest.getStringHeader('sort-type')
+		let pageIndex = httpRequest.getIntHeader('page-index')
+		let pageSize = httpRequest.getIntHeader('page-size')
 
-		pageIndex = isNaN(pageIndex) ? 1 : pageIndex
-		pageSize = isNaN(pageSize) ? 15 : pageSize
+		pageIndex = pageIndex ?? 1
+		pageSize = pageSize ?? 15
 		if (normalize) normalize(filter)
 
 		try {
@@ -125,33 +125,22 @@ export class HttpMethodHandler<M extends object, F extends object> {
 
 			httpResponse
 				.setStatus(200)
-				.setHeader('Content-Type', 'application/json')
-				.setHeader('SortType', result.sortType.toString())
-				.setHeader('PageIndex', pageIndex.toString())
-				.setHeader('PageSize', pageSize.toString())
-				.setHeader('PageCount', result.pageCount.toString())
-				.setHeader('ItemCount', result.itemCount.toString())
-				.setBody(JSON.stringify(result.models))
+				.setStandardHeader('content-type-json')
+				.setCustomHeader('Page-Count', result.pageCount.toString())
+				.setCustomHeader('Item-Count', result.itemCount.toString())
+				.setBody(result.models)
 		} catch (error) {
 			this.manageControllerError(error as Error, httpResponse)
 		}
 	}
 
-	private deserialize<T extends object>(json: string): T {
-		try {
-			return <T>JSON.parse(json)
-		} catch {
-			return <T>{}
-		}
-	}
-
-	private manageControllerError(error: Error, httpResponse: IHttpResponse) {
+	private manageControllerError(error: Error, httpResponse: ITypedHttpResponse) {
 		if (error instanceof ForbiddenError) {
-			httpResponse.setStatus(403).setBody(error.message)
+			httpResponse.setStatus(403).setBody([error.message])
 		} else if (error instanceof NotFoundError) {
-			httpResponse.setStatus(404).setBody(error.message)
+			httpResponse.setStatus(404).setBody([error.message])
 		} else {
-			httpResponse.setStatus(500).setBody(error.message)
+			httpResponse.setStatus(500).setBody([error.message])
 		}
 	}
 

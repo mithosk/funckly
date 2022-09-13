@@ -1,21 +1,15 @@
 import { ServerResponse } from 'http'
 
-export interface IHttpResponse {
-	setStatus(code: number): IHttpResponse
-	setHeader(name: string, value: string): IHttpResponse
-	setBody(body: string): void
-}
-
-export class HttpResponse implements IHttpResponse {
+export class HttpResponse {
 	constructor(private readonly serverResponse: ServerResponse) {}
 
-	public setStatus(code: number): IHttpResponse {
+	public setStatus(code: number): HttpResponse {
 		this.serverResponse.statusCode = code
 
 		return this
 	}
 
-	public setHeader(name: string, value: string): IHttpResponse {
+	public setHeader(name: string, value: string): HttpResponse {
 		this.serverResponse.setHeader(name, value)
 
 		return this

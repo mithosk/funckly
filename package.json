@@ -1,6 +1,6 @@
 {
   "name": "funckly",
-  "version": "0.9.2",
+  "version": "0.9.13",
   "description": "Simple Web API Framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,15 @@
   },
   "jest": {
     "rootDir": "dist",
-    "coverageDirectory": "../coverage/"
+    "coverageDirectory": "../coverage/",
+    "coverageThreshold": {
+      "global": {
+        "statements": 95,
+        "branches": 91,
+        "functions": 95,
+        "lines": 95
+      }
+    }
   },
   "scripts": {
     "build": "tsc --build",

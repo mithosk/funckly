@@ -20,6 +20,11 @@ rules:
     - selector: enumMember
       format:
         - StrictPascalCase
-    - selector: typeLike
+    - selector: typeAlias
+      format:
+        - StrictPascalCase
+      prefix:
+        - 'T'
+    - selector: typeParameter
       format:
         - StrictPascalCase

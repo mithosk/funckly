@@ -16,6 +16,8 @@ export * from './main/create-controller'
 export * from './main/http-method-handler'
 export * from './main/normalize'
 export * from './main/rest-unit'
+export * from './main/typed-http-request'
+export * from './main/typed-http-response'
 export * from './main/validate'
 
 //server
