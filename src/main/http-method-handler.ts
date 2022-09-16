@@ -5,6 +5,7 @@ import { NotFoundError } from '../crud/not-found-error'
 import { ForbiddenError } from '../crud/forbidden-error'
 import { ITypedHttpRequest } from './typed-http-request'
 import { ITypedHttpResponse } from './typed-http-response'
+import { MethodNotAllowedError } from '../crud/method-not-allowed-error'
 
 export class HttpMethodHandler<M extends object, F extends object> {
 	constructor(private readonly controller: IController<M, F>) {}
@@ -136,11 +137,13 @@ export class HttpMethodHandler<M extends object, F extends object> {
 
 	private manageControllerError(error: Error, httpResponse: ITypedHttpResponse) {
 		if (error instanceof ForbiddenError) {
-			httpResponse.setStatus(403).setBody([error.message])
+			httpResponse.setStatus(403).setStandardHeader('content-type-json').setBody([error.message])
 		} else if (error instanceof NotFoundError) {
-			httpResponse.setStatus(404).setBody([error.message])
+			httpResponse.setStatus(404).setStandardHeader('content-type-json').setBody([error.message])
+		} else if (error instanceof MethodNotAllowedError) {
+			httpResponse.setStatus(405).setStandardHeader('content-type-json').setBody([error.message])
 		} else {
-			httpResponse.setStatus(500).setBody([error.message])
+			httpResponse.setStatus(500).setStandardHeader('content-type-json').setBody([error.message])
 		}
 	}
 

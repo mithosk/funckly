@@ -20,24 +20,24 @@ export class MyFilter {
 export class MyController implements IController<MyModel, MyFilter> {
     public async create(
         model: MyModel,
-        identifiers: { [name: string]: string; }
+        identifiers: { [name: string]: string }
     ): Promise<MyModel> { }
 
     public async read(
-        identifiers: { [name: string]: string; }
+        identifiers: { [name: string]: string }
     ): Promise<MyModel> { }
 
     public async update(
-        identifiers: { [name: string]: string; },
+        identifiers: { [name: string]: string },
         model: MyModel
     ): Promise<MyModel> { }
 
     public async delete(
-        identifiers: { [name: string]: string; }
+        identifiers: { [name: string]: string }
     ): Promise<void> { }
 
     public async list(
-        identifiers: { [name: string]: string; },
+        identifiers: { [name: string]: string },
         filter: MyFilter,
         sortType: string,
         pageIndex: number,

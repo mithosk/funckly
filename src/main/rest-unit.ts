@@ -29,7 +29,7 @@ export class RestUnit<M extends object, F extends object> {
 					break
 
 				default:
-					typedHttpResponse.setStatus(404).setBody(['method not found'])
+					typedHttpResponse.setStatus(405).setStandardHeader('content-type-json').setBody(['method not allowed'])
 			}
 		})
 
@@ -56,7 +56,7 @@ export class RestUnit<M extends object, F extends object> {
 					break
 
 				default:
-					typedHttpResponse.setStatus(404).setBody(['method not found'])
+					typedHttpResponse.setStatus(405).setStandardHeader('content-type-json').setBody(['method not allowed'])
 			}
 		})
 

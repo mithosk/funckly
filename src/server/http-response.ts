@@ -1,7 +1,7 @@
-import { ServerResponse } from 'http'
+import { IServerResponse } from './server-response'
 
 export class HttpResponse {
-	constructor(private readonly serverResponse: ServerResponse) {}
+	constructor(private readonly serverResponse: IServerResponse) {}
 
 	public setStatus(code: number): HttpResponse {
 		this.serverResponse.statusCode = code

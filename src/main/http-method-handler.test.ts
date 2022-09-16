@@ -5,6 +5,7 @@ import { ForbiddenError } from '../crud/forbidden-error'
 import { ITypedHttpRequest } from './typed-http-request'
 import { HttpMethodHandler } from './http-method-handler'
 import { ITypedHttpResponse } from './typed-http-response'
+import { MethodNotAllowedError } from '../crud/method-not-allowed-error'
 
 describe('HttpMethodHandler', () => {
 	class FakeModel {
@@ -79,6 +80,7 @@ describe('HttpMethodHandler', () => {
 				throw new ForbiddenError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).post(request, response, undefined)
 
@@ -86,11 +88,25 @@ describe('HttpMethodHandler', () => {
 			expect(response.setStatus.mock.calls[0][0]).toBe(403)
 		})
 
+		it('sets the status to 405', async () => {
+			controller.create.mockImplementation(() => {
+				throw new MethodNotAllowedError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).post(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(405)
+		})
+
 		it('sets the status to 500', async () => {
 			controller.create.mockImplementation(() => {
 				throw new Error('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).post(request, response, undefined)
 
@@ -115,6 +131,7 @@ describe('HttpMethodHandler', () => {
 				throw new NotFoundError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).getOne(request, response)
 
@@ -122,11 +139,25 @@ describe('HttpMethodHandler', () => {
 			expect(response.setStatus.mock.calls[0][0]).toBe(404)
 		})
 
+		it('sets the status to 405', async () => {
+			controller.read.mockImplementation(() => {
+				throw new MethodNotAllowedError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).getOne(request, response)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(405)
+		})
+
 		it('sets the status to 500', async () => {
 			controller.read.mockImplementation(() => {
 				throw new Error('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).getOne(request, response)
 
@@ -162,6 +193,7 @@ describe('HttpMethodHandler', () => {
 				throw new ForbiddenError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).put(request, response, undefined)
 
@@ -174,6 +206,7 @@ describe('HttpMethodHandler', () => {
 				throw new NotFoundError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).put(request, response, undefined)
 
@@ -181,11 +214,25 @@ describe('HttpMethodHandler', () => {
 			expect(response.setStatus.mock.calls[0][0]).toBe(404)
 		})
 
+		it('sets the status to 405', async () => {
+			controller.update.mockImplementation(() => {
+				throw new MethodNotAllowedError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).put(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(405)
+		})
+
 		it('sets the status to 500', async () => {
 			controller.update.mockImplementation(() => {
 				throw new Error('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).put(request, response, undefined)
 
@@ -225,6 +272,7 @@ describe('HttpMethodHandler', () => {
 				throw new ForbiddenError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).patch(request, response, undefined)
 
@@ -237,6 +285,7 @@ describe('HttpMethodHandler', () => {
 				throw new NotFoundError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).patch(request, response, undefined)
 
@@ -244,11 +293,25 @@ describe('HttpMethodHandler', () => {
 			expect(response.setStatus.mock.calls[0][0]).toBe(404)
 		})
 
+		it('sets the status to 405', async () => {
+			controller.read.mockImplementation(() => {
+				throw new MethodNotAllowedError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).patch(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(405)
+		})
+
 		it('sets the status to 500', async () => {
 			controller.read.mockImplementation(() => {
 				throw new Error('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).patch(request, response, undefined)
 
@@ -270,6 +333,7 @@ describe('HttpMethodHandler', () => {
 				throw new ForbiddenError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).delete(request, response)
 
@@ -282,6 +346,7 @@ describe('HttpMethodHandler', () => {
 				throw new NotFoundError('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).delete(request, response)
 
@@ -289,11 +354,25 @@ describe('HttpMethodHandler', () => {
 			expect(response.setStatus.mock.calls[0][0]).toBe(404)
 		})
 
+		it('sets the status to 405', async () => {
+			controller.delete.mockImplementation(() => {
+				throw new MethodNotAllowedError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).delete(request, response)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(405)
+		})
+
 		it('sets the status to 500', async () => {
 			controller.delete.mockImplementation(() => {
 				throw new Error('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).delete(request, response)
 
@@ -304,7 +383,7 @@ describe('HttpMethodHandler', () => {
 
 	describe('getMany', () => {
 		it('sets the status to 200', async () => {
-			controller.list.mockResolvedValue({ models: [], sortType: 'xxx', pageCount: 1, itemCount: 10 })
+			controller.list.mockResolvedValue({ models: [], pageCount: 1, itemCount: 10 })
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 			response.setCustomHeader.mockReturnValue(response)
@@ -315,11 +394,25 @@ describe('HttpMethodHandler', () => {
 			expect(response.setStatus.mock.calls[0][0]).toBe(200)
 		})
 
+		it('sets the status to 405', async () => {
+			controller.list.mockImplementation(() => {
+				throw new MethodNotAllowedError('xxx')
+			})
+			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
+
+			await new HttpMethodHandler(controller).getMany(request, response, undefined)
+
+			expect(response.setStatus.mock.calls.length).toBe(1)
+			expect(response.setStatus.mock.calls[0][0]).toBe(405)
+		})
+
 		it('sets the status to 500', async () => {
 			controller.list.mockImplementation(() => {
 				throw new Error('xxx')
 			})
 			response.setStatus.mockReturnValue(response)
+			response.setStandardHeader.mockReturnValue(response)
 
 			await new HttpMethodHandler(controller).getMany(request, response, undefined)
 
