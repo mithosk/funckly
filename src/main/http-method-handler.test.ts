@@ -49,6 +49,10 @@ describe('HttpMethodHandler', () => {
 
 		validator = {
 			notEmpty: jest.fn(),
+			isString: jest.fn(),
+			isUuid: jest.fn(),
+			isInt: jest.fn(),
+			isFloat: jest.fn(),
 			getErrors: jest.fn()
 		}
 	})
@@ -243,8 +247,8 @@ describe('HttpMethodHandler', () => {
 
 	describe('patch', () => {
 		it('sets the status to 200', async () => {
-			controller.read.mockResolvedValue({ cat: undefined, dog: undefined, tiger: undefined })
-			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: undefined })
+			controller.read.mockResolvedValue({ cat: 'xxx', dog: 111, tiger: 'yyy' })
+			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: 'zzz' })
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
@@ -255,8 +259,8 @@ describe('HttpMethodHandler', () => {
 		})
 
 		it('sets the status to 400', async () => {
-			controller.read.mockResolvedValue({ cat: undefined, dog: undefined, tiger: undefined })
-			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: undefined })
+			controller.read.mockResolvedValue({ cat: 'xxx', dog: 111, tiger: 'yyy' })
+			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: 'zzz' })
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 			validator.getErrors.mockReturnValue(['xxx'])

@@ -55,8 +55,8 @@ application.createRestUnit<MyModel, MyFilter>('crocodiles')
     .setValidation(model =>
         new Validator(model)
             .notEmpty(model => model.cat, 'empty cat')
-            .notEmpty(model => model.dog, 'empty dog')
-            .notEmpty(model => model.tiger, 'empty tiger')
+            .isInt(model => model.dog, 'dog is not integer')
+            .isUuid(model => model.tiger, 'tiger is not UUID')
     )
     .setNormalization(filter =>
         filter.lion = filter.lion?.toLowerCase()
