@@ -1,5 +1,5 @@
-import { IValidator } from '../crud/validator'
 import { IController } from '../crud/controller'
+import { IValidator } from '../inspect/validator'
 import { NotFoundError } from '../crud/not-found-error'
 import { ForbiddenError } from '../crud/forbidden-error'
 import { ITypedHttpRequest } from './typed-http-request'
@@ -50,9 +50,14 @@ describe('HttpMethodHandler', () => {
 		validator = {
 			notEmpty: jest.fn(),
 			isString: jest.fn(),
+			mustLength: jest.fn(),
 			isUuid: jest.fn(),
+			isDate: jest.fn(),
+			isEnum: jest.fn(),
 			isInt: jest.fn(),
 			isFloat: jest.fn(),
+			mustRange: jest.fn(),
+			isArray: jest.fn(),
 			getErrors: jest.fn()
 		}
 	})
@@ -61,8 +66,9 @@ describe('HttpMethodHandler', () => {
 		it('sets the status to 201', async () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
+			validator.getErrors.mockReturnValue([])
 
-			await new HttpMethodHandler(controller).post(request, response, undefined)
+			await new HttpMethodHandler(controller).post(request, response, () => validator)
 
 			expect(response.setStatus.mock.calls.length).toBe(1)
 			expect(response.setStatus.mock.calls[0][0]).toBe(201)
@@ -174,8 +180,9 @@ describe('HttpMethodHandler', () => {
 		it('sets the status to 200', async () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
+			validator.getErrors.mockReturnValue([])
 
-			await new HttpMethodHandler(controller).put(request, response, undefined)
+			await new HttpMethodHandler(controller).put(request, response, () => validator)
 
 			expect(response.setStatus.mock.calls.length).toBe(1)
 			expect(response.setStatus.mock.calls[0][0]).toBe(200)
@@ -251,8 +258,9 @@ describe('HttpMethodHandler', () => {
 			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: 'zzz' })
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
+			validator.getErrors.mockReturnValue([])
 
-			await new HttpMethodHandler(controller).patch(request, response, undefined)
+			await new HttpMethodHandler(controller).patch(request, response, () => validator)
 
 			expect(response.setStatus.mock.calls.length).toBe(1)
 			expect(response.setStatus.mock.calls[0][0]).toBe(200)
@@ -311,9 +319,11 @@ describe('HttpMethodHandler', () => {
 		})
 
 		it('sets the status to 500', async () => {
-			controller.read.mockImplementation(() => {
+			controller.read.mockResolvedValue({ cat: 'xxx', dog: 111, tiger: 'yyy' })
+			controller.update.mockImplementation(() => {
 				throw new Error('xxx')
 			})
+			request.getBody.mockReturnValue({ cat: undefined, dog: undefined, tiger: 'zzz' })
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 

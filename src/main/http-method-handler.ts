@@ -1,5 +1,5 @@
-import { IValidate } from './validate'
 import { INormalize } from './normalize'
+import { IValidate } from '../inspect/validate'
 import { IController } from '../crud/controller'
 import { NotFoundError } from '../crud/not-found-error'
 import { ForbiddenError } from '../crud/forbidden-error'
@@ -118,7 +118,7 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		let pageSize = httpRequest.getIntHeader('page-size')
 
 		pageIndex = pageIndex ?? 1
-		pageSize = pageSize ?? 15
+		pageSize = pageSize ?? 30
 		if (normalize) normalize(filter)
 
 		try {
