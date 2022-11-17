@@ -1,6 +1,7 @@
-import { INormalize } from './normalize'
 import { IValidate } from '../inspect/validate'
 import { IController } from '../crud/controller'
+import { INormalize } from '../inspect/normalize'
+import { Normalizer } from '../inspect/normalizer'
 import { NotFoundError } from '../crud/not-found-error'
 import { ForbiddenError } from '../crud/forbidden-error'
 import { ITypedHttpRequest } from './typed-http-request'
@@ -119,7 +120,7 @@ export class HttpMethodHandler<M extends object, F extends object> {
 
 		pageIndex = pageIndex ?? 1
 		pageSize = pageSize ?? 30
-		if (normalize) normalize(filter)
+		if (normalize) normalize(new Normalizer(filter))
 
 		try {
 			const result = await this.controller.list(identifiers, filter, sortType, pageIndex, pageSize)
@@ -148,7 +149,7 @@ export class HttpMethodHandler<M extends object, F extends object> {
 	}
 
 	private copy(destination: M, source: M): void {
-		Object.keys(destination).forEach(key => {
+		Object.keys(source).forEach(key => {
 			if (source[key as keyof M] !== undefined) destination[key as keyof M] = source[key as keyof M]
 		})
 	}

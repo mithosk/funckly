@@ -57,6 +57,7 @@ describe('HttpMethodHandler', () => {
 			isInt: jest.fn(),
 			isFloat: jest.fn(),
 			mustRange: jest.fn(),
+			isBoolean: jest.fn(),
 			isArray: jest.fn(),
 			getErrors: jest.fn()
 		}

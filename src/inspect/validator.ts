@@ -1,4 +1,5 @@
 import { IValue } from './value'
+import { RegExpContainer } from './reg-exp-container'
 
 export interface IValidator<B extends object> {
 	notEmpty<V>(value: IValue<B, V>, message: string): IValidator<B>
@@ -10,12 +11,14 @@ export interface IValidator<B extends object> {
 	isInt<V>(value: IValue<B, V>, message: string): IValidator<B>
 	isFloat<V>(value: IValue<B, V>, message: string): IValidator<B>
 	mustRange<V>(value: IValue<B, V>, min: number, max: number, message: string): IValidator<B>
+	isBoolean<V>(value: IValue<B, V>, message: string): IValidator<B>
 	isArray<V>(value: IValue<B, V>, message: string): boolean
 	getErrors(): string[]
 }
 
 export class Validator<B extends object> implements IValidator<B> {
 	private readonly errors: string[] = []
+	private readonly rec = new RegExpContainer()
 
 	constructor(private readonly body: B) {}
 
@@ -47,10 +50,7 @@ export class Validator<B extends object> implements IValidator<B> {
 	public isUuid<V>(value: IValue<B, V>, message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined) {
-			const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-			if (typeof v !== 'string' || !regex.test(v)) this.errors.push(message)
-		}
+		if (v !== null && v !== undefined) if (typeof v !== 'string' || !this.rec.uuid(v)) this.errors.push(message)
 
 		return this
 	}
@@ -58,10 +58,7 @@ export class Validator<B extends object> implements IValidator<B> {
 	public isDate<V>(value: IValue<B, V>, message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined) {
-			const regex = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i
-			if (typeof v !== 'string' || !regex.test(v)) this.errors.push(message)
-		}
+		if (v !== null && v !== undefined) if (typeof v !== 'string' || !this.rec.date(v)) this.errors.push(message)
 
 		return this
 	}
@@ -94,6 +91,14 @@ export class Validator<B extends object> implements IValidator<B> {
 		const v = value(this.body)
 
 		if (v !== null && v !== undefined && typeof v === 'number') if (v < min || v > max) this.errors.push(message)
+
+		return this
+	}
+
+	public isBoolean<V>(value: IValue<B, V>, message: string): IValidator<B> {
+		const v = value(this.body)
+
+		if (v !== null && v !== undefined) if (typeof v !== 'boolean') this.errors.push(message)
 
 		return this
 	}

@@ -429,7 +429,75 @@ describe('Validator', () => {
 				cat: 15
 			}
 
-			const errors = new Validator(body).mustLength(body => body.cat, 15, 15, 'xxx').getErrors()
+			const errors = new Validator(body).mustRange(body => body.cat, 15, 15, 'xxx').getErrors()
+
+			expect(errors).toEqual([])
+		})
+	})
+
+	describe('isBoolean', () => {
+		it('recognizes strings as not boolean', () => {
+			const body = {
+				cat: 'true',
+				dog: 'false'
+			}
+
+			const errors = new Validator(body)
+				.isBoolean(body => body.cat, 'xxx')
+				.isBoolean(body => body.dog, 'yyy')
+				.getErrors()
+
+			expect(errors).toEqual(['xxx', 'yyy'])
+		})
+
+		it('recognizes numbers as not boolean', () => {
+			const body = {
+				cat: 12,
+				dog: 54.7
+			}
+
+			const errors = new Validator(body)
+				.isBoolean(body => body.cat, 'xxx')
+				.isBoolean(body => body.dog, 'yyy')
+				.getErrors()
+
+			expect(errors).toEqual(['xxx', 'yyy'])
+		})
+
+		it('recognizes an array as not boolean', () => {
+			const body = {
+				cat: []
+			}
+
+			const errors = new Validator(body).isBoolean(body => body.cat, 'xxx').getErrors()
+
+			expect(errors).toEqual(['xxx'])
+		})
+
+		it('recognizes an object as not boolean', () => {
+			const body = {
+				cat: {}
+			}
+
+			const errors = new Validator(body).isBoolean(body => body.cat, 'xxx').getErrors()
+
+			expect(errors).toEqual(['xxx'])
+		})
+
+		it('finds no errors', () => {
+			const body = {
+				cat: true,
+				dog: false,
+				tiger: null,
+				lion: undefined
+			}
+
+			const errors = new Validator(body)
+				.isBoolean(body => body.cat, 'xxx')
+				.isBoolean(body => body.dog, 'yyy')
+				.isBoolean(body => body.tiger, 'zzz')
+				.isBoolean(body => body.lion, 'kkk')
+				.getErrors()
 
 			expect(errors).toEqual([])
 		})

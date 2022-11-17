@@ -1,11 +1,11 @@
-import { INormalize } from './normalize'
 import { IValidate } from '../inspect/validate'
+import { IController } from '../crud/controller'
+import { INormalize } from '../inspect/normalize'
 import { HttpMethod } from '../server/http-method'
 import { TypedHttpRequest } from './typed-http-request'
 import { VanillaServer } from '../server/vanilla-server'
 import { HttpMethodHandler } from './http-method-handler'
 import { TypedHttpResponse } from './typed-http-response'
-import { ICreateController } from '../crud/create-controller'
 
 export class RestUnit<M extends object, F extends object> {
 	private validate: IValidate<M> | undefined = undefined
@@ -13,9 +13,9 @@ export class RestUnit<M extends object, F extends object> {
 
 	constructor(private readonly server: VanillaServer, private readonly route: string) {}
 
-	public setController(createController: ICreateController<M, F>): RestUnit<M, F> {
+	public setController(controller: IController<M, F>): RestUnit<M, F> {
 		this.server.subscribe(this.route, async (httpMethod, httpRequest, httpResponse) => {
-			const httpMethodHandler = new HttpMethodHandler(createController())
+			const httpMethodHandler = new HttpMethodHandler(controller)
 			const typedHttpRequest = new TypedHttpRequest(httpRequest)
 			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 
@@ -34,7 +34,7 @@ export class RestUnit<M extends object, F extends object> {
 		})
 
 		this.server.subscribe(this.route + '/{id}', async (httpMethod, httpRequest, httpResponse) => {
-			const httpMethodHandler = new HttpMethodHandler(createController())
+			const httpMethodHandler = new HttpMethodHandler(controller)
 			const typedHttpRequest = new TypedHttpRequest(httpRequest)
 			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 

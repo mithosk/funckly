@@ -7,14 +7,15 @@ const application = new Application(5000)
 
 ### ... how to create a funckly CONTROLLER ...
 ```ts
-export class MyModel {
-    cat: string | undefined
-    dog: number | undefined
-    tiger: string | undefined
+export interface MyModel {
+    cat: string
+    dog: number
+    tiger: string
 }
 
-export class MyFilter {
-    lion: string | undefined
+export interface MyFilter {
+    lion: boolean
+    crocodile: number
 }
 
 export class MyController implements IController<MyModel, MyFilter> {
@@ -50,16 +51,18 @@ export class MyController implements IController<MyModel, MyFilter> {
 
 ### ... how to create a funckly REST UNIT ...
 ```ts
-application.createRestUnit<MyModel, MyFilter>('crocodiles')
-    .setController(() => new MyController())
+application.createRestUnit<MyModel, MyFilter>('horses')
+    .setController(new MyController())
     .setValidation(model =>
         new Validator(model)
             .notEmpty(model => model.cat, 'empty cat')
-            .isInt(model => model.dog, 'dog is not integer')
+            .isFloat(model => model.dog, 'dog is not float')
             .isUuid(model => model.tiger, 'tiger is not UUID')
     )
-    .setNormalization(filter =>
-        filter.lion = filter.lion?.toLowerCase()
+    .setNormalization(normalizer =>
+        normalizer
+            .asBoolean('lion')
+            .asInt('crocodile')
     )
 ```
 
@@ -67,10 +70,10 @@ application.createRestUnit<MyModel, MyFilter>('crocodiles')
 
 ### ... available http calls ...
 ```
-HTTP POST   /crocodiles          (create)
-HTTP GET    /crocodiles/12345    (read)
-HTTP PUT    /crocodiles/12345    (update)
-HTTP PATCH  /crocodiles/12345    (read & update)
-HTTP DELETE /crocodiles/12345    (delete)
-HTTP GET    /crocodiles?lion=xxx (list)
+HTTP POST   /horses           (create)
+HTTP GET    /horses/12345     (read)
+HTTP PUT    /horses/12345     (update)
+HTTP PATCH  /horses/12345     (read & update)
+HTTP DELETE /horses/12345     (delete)
+HTTP GET    /horses?lion=true (list)
 ```
