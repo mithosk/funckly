@@ -1,4 +1,6 @@
 extends:
+  - plugin:import/typescript
+  - plugin:import/recommended
   - plugin:@typescript-eslint/recommended
 rules:
   '@typescript-eslint/naming-convention':
@@ -28,3 +30,6 @@ rules:
     - selector: typeParameter
       format:
         - StrictPascalCase
+
+  'import/no-relative-parent-imports':
+    - error

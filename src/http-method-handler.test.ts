@@ -1,11 +1,11 @@
-import { IController } from '../crud/controller'
-import { IValidator } from '../inspect/validator'
-import { NotFoundError } from '../crud/not-found-error'
-import { ForbiddenError } from '../crud/forbidden-error'
-import { ITypedHttpRequest } from './typed-http-request'
+import { IController } from './section/crud/controller'
+import { IValidator } from './section/inspect/validator'
 import { HttpMethodHandler } from './http-method-handler'
-import { ITypedHttpResponse } from './typed-http-response'
-import { MethodNotAllowedError } from '../crud/method-not-allowed-error'
+import { NotFoundError } from './section/crud/not-found-error'
+import { ForbiddenError } from './section/crud/forbidden-error'
+import { ITypedHttpRequest } from './section/server/typed-http-request'
+import { ITypedHttpResponse } from './section/server/typed-http-response'
+import { MethodNotAllowedError } from './section/crud/method-not-allowed-error'
 
 describe('HttpMethodHandler', () => {
 	class FakeModel {

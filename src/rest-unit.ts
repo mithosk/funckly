@@ -1,11 +1,11 @@
-import { IValidate } from '../inspect/validate'
-import { IController } from '../crud/controller'
-import { INormalize } from '../inspect/normalize'
-import { HttpMethod } from '../server/http-method'
-import { TypedHttpRequest } from './typed-http-request'
-import { VanillaServer } from '../server/vanilla-server'
+import { IValidate } from './section/inspect/validate'
+import { IController } from './section/crud/controller'
+import { INormalize } from './section/inspect/normalize'
+import { HttpMethod } from './section/server/http-method'
 import { HttpMethodHandler } from './http-method-handler'
-import { TypedHttpResponse } from './typed-http-response'
+import { VanillaServer } from './section/server/vanilla-server'
+import { TypedHttpRequest } from './section/server/typed-http-request'
+import { TypedHttpResponse } from './section/server/typed-http-response'
 
 export class RestUnit<M extends object, F extends object> {
 	private validate: IValidate<M> | undefined = undefined

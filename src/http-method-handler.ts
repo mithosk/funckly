@@ -1,12 +1,12 @@
-import { IValidate } from '../inspect/validate'
-import { IController } from '../crud/controller'
-import { INormalize } from '../inspect/normalize'
-import { Normalizer } from '../inspect/normalizer'
-import { NotFoundError } from '../crud/not-found-error'
-import { ForbiddenError } from '../crud/forbidden-error'
-import { ITypedHttpRequest } from './typed-http-request'
-import { ITypedHttpResponse } from './typed-http-response'
-import { MethodNotAllowedError } from '../crud/method-not-allowed-error'
+import { IValidate } from './section/inspect/validate'
+import { IController } from './section/crud/controller'
+import { INormalize } from './section/inspect/normalize'
+import { Normalizer } from './section/inspect/normalizer'
+import { NotFoundError } from './section/crud/not-found-error'
+import { ForbiddenError } from './section/crud/forbidden-error'
+import { ITypedHttpRequest } from './section/server/typed-http-request'
+import { ITypedHttpResponse } from './section/server/typed-http-response'
+import { MethodNotAllowedError } from './section/crud/method-not-allowed-error'
 
 export class HttpMethodHandler<M extends object, F extends object> {
 	constructor(private readonly controller: IController<M, F>) {}

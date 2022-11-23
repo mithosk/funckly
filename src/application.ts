@@ -1,5 +1,5 @@
 import { RestUnit } from './rest-unit'
-import { VanillaServer } from '../server/vanilla-server'
+import { VanillaServer } from './section/server/vanilla-server'
 
 export class Application {
 	private readonly server: VanillaServer

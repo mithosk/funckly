@@ -1,4 +1,4 @@
-import { HttpRequest } from '../server/http-request'
+import { HttpRequest } from './http-request'
 
 type TStringHeaderName = 'sort-type'
 type TIntHeaderName = 'page-index' | 'page-size'

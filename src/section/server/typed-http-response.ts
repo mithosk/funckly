@@ -1,4 +1,4 @@
-import { HttpResponse } from '../server/http-response'
+import { HttpResponse } from './http-response'
 
 type TStatusCode = 200 | 201 | 204 | 400 | 403 | 404 | 405 | 500
 type TStandardHeader = 'content-type-json'
