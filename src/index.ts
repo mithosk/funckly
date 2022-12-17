@@ -4,6 +4,7 @@ export * from './rest-unit'
 
 //crud
 export * from './section/crud/controller'
+export * from './section/crud/create-controller'
 export * from './section/crud/forbidden-error'
 export * from './section/crud/method-not-allowed-error'
 export * from './section/crud/not-found-error'
@@ -16,6 +17,8 @@ export * from './section/functional/operation-builder'
 //inspect
 export * from './section/inspect/normalize'
 export * from './section/inspect/normalizer'
+export * from './section/inspect/prevalidation-format'
+export * from './section/inspect/prevalidator'
 export * from './section/inspect/reg-exp-container'
 export * from './section/inspect/validate'
 export * from './section/inspect/validator'

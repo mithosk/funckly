@@ -52,7 +52,8 @@ export class MyController implements IController<MyModel, MyFilter> {
 ### ... how to create a funckly REST UNIT ...
 ```ts
 application.createRestUnit<MyModel, MyFilter>('horses')
-    .setController(new MyController())
+    .setController(() => new MyController())
+    .setPrevalidation(PrevalidationFormat.Ncode)
     .setValidation(model =>
         new Validator(model)
             .notEmpty(model => model.cat, 'empty cat')

@@ -223,6 +223,48 @@ describe('Validator', () => {
 		})
 	})
 
+	describe('isEmail', () => {
+		it('recognizes numbers as not email', () => {
+			const body = {
+				cat: 145,
+				dog: 1.23
+			}
+
+			const errors = new Validator(body)
+				.isEmail(body => body.cat, 'xxx')
+				.isEmail(body => body.dog, 'yyy')
+				.getErrors()
+
+			expect(errors).toEqual(['xxx', 'yyy'])
+		})
+
+		it('recognizes a generic string as not email', () => {
+			const body = {
+				cat: 'aaa'
+			}
+
+			const errors = new Validator(body).isEmail(body => body.cat, 'xxx').getErrors()
+
+			expect(errors).toEqual(['xxx'])
+		})
+
+		it('finds no errors', () => {
+			const body = {
+				cat: 'peter.parker@en.spider.net',
+				dog: null,
+				tiger: undefined
+			}
+
+			const errors = new Validator(body)
+				.isEmail(body => body.cat, 'xxx')
+				.isEmail(body => body.dog, 'yyy')
+				.isEmail(body => body.tiger, 'zzz')
+				.getErrors()
+
+			expect(errors).toEqual([])
+		})
+	})
+
 	describe('isEnum', () => {
 		it('recognizes numbers as not enum', () => {
 			const body = {

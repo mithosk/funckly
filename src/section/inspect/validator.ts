@@ -7,6 +7,7 @@ export interface IValidator<B extends object> {
 	mustLength<V>(value: IValue<B, V>, min: number, max: number, message: string): IValidator<B>
 	isUuid<V>(value: IValue<B, V>, message: string): IValidator<B>
 	isDate<V>(value: IValue<B, V>, message: string): IValidator<B>
+	isEmail<V>(value: IValue<B, V>, message: string): IValidator<B>
 	isEnum<V>(value: IValue<B, V>, members: string[], message: string): IValidator<B>
 	isInt<V>(value: IValue<B, V>, message: string): IValidator<B>
 	isFloat<V>(value: IValue<B, V>, message: string): IValidator<B>
@@ -59,6 +60,14 @@ export class Validator<B extends object> implements IValidator<B> {
 		const v = value(this.body)
 
 		if (v !== null && v !== undefined) if (typeof v !== 'string' || !this.rec.date(v)) this.errors.push(message)
+
+		return this
+	}
+
+	public isEmail<V>(value: IValue<B, V>, message: string): IValidator<B> {
+		const v = value(this.body)
+
+		if (v !== null && v !== undefined) if (typeof v !== 'string' || !this.rec.email(v)) this.errors.push(message)
 
 		return this
 	}

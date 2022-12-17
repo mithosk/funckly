@@ -1,31 +1,34 @@
 import { IValidate } from './section/inspect/validate'
-import { IController } from './section/crud/controller'
 import { INormalize } from './section/inspect/normalize'
 import { HttpMethod } from './section/server/http-method'
 import { HttpMethodHandler } from './http-method-handler'
 import { VanillaServer } from './section/server/vanilla-server'
+import { ICreateController } from './section/crud/create-controller'
 import { TypedHttpRequest } from './section/server/typed-http-request'
 import { TypedHttpResponse } from './section/server/typed-http-response'
+import { PrevalidationFormat } from './section/inspect/prevalidation-format'
+import { IPrevalidator, Prevalidator } from './section/inspect/prevalidator'
 
 export class RestUnit<M extends object, F extends object> {
+	private prevalidator: IPrevalidator | undefined = undefined
 	private validate: IValidate<M> | undefined = undefined
 	private normalize: INormalize<F> | undefined = undefined
 
 	constructor(private readonly server: VanillaServer, private readonly route: string) {}
 
-	public setController(controller: IController<M, F>): RestUnit<M, F> {
+	public setController(createController: ICreateController<M, F>): RestUnit<M, F> {
 		this.server.subscribe(this.route, async (httpMethod, httpRequest, httpResponse) => {
-			const httpMethodHandler = new HttpMethodHandler(controller)
+			const httpMethodHandler = new HttpMethodHandler(createController(), this.prevalidator, this.validate, this.normalize)
 			const typedHttpRequest = new TypedHttpRequest(httpRequest)
 			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 
 			switch (httpMethod) {
 				case HttpMethod.Post:
-					await httpMethodHandler.post(typedHttpRequest, typedHttpResponse, this.validate)
+					await httpMethodHandler.post(typedHttpRequest, typedHttpResponse)
 					break
 
 				case HttpMethod.Get:
-					await httpMethodHandler.getMany(typedHttpRequest, typedHttpResponse, this.normalize)
+					await httpMethodHandler.getMany(typedHttpRequest, typedHttpResponse)
 					break
 
 				default:
@@ -34,7 +37,7 @@ export class RestUnit<M extends object, F extends object> {
 		})
 
 		this.server.subscribe(this.route + '/{id}', async (httpMethod, httpRequest, httpResponse) => {
-			const httpMethodHandler = new HttpMethodHandler(controller)
+			const httpMethodHandler = new HttpMethodHandler(createController(), this.prevalidator, this.validate, this.normalize)
 			const typedHttpRequest = new TypedHttpRequest(httpRequest)
 			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 
@@ -44,11 +47,11 @@ export class RestUnit<M extends object, F extends object> {
 					break
 
 				case HttpMethod.Put:
-					await httpMethodHandler.put(typedHttpRequest, typedHttpResponse, this.validate)
+					await httpMethodHandler.put(typedHttpRequest, typedHttpResponse)
 					break
 
 				case HttpMethod.Patch:
-					await httpMethodHandler.patch(typedHttpRequest, typedHttpResponse, this.validate)
+					await httpMethodHandler.patch(typedHttpRequest, typedHttpResponse)
 					break
 
 				case HttpMethod.Delete:
@@ -59,6 +62,12 @@ export class RestUnit<M extends object, F extends object> {
 					typedHttpResponse.setStatus(405).setStandardHeader('content-type-json').setBody(['method not allowed'])
 			}
 		})
+
+		return this
+	}
+
+	public setPrevalidation(format: PrevalidationFormat): RestUnit<M, F> {
+		this.prevalidator = new Prevalidator(format)
 
 		return this
 	}
