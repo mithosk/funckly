@@ -1,6 +1,6 @@
 import { HttpResponse } from './http-response'
 
-type TStatusCode = 200 | 201 | 204 | 400 | 403 | 404 | 405 | 500
+type TStatusCode = 200 | 201 | 204 | 400 | 401 | 403 | 404 | 405 | 500
 type TStandardHeader = 'content-type-json'
 type TCustomHeaderName = 'Page-Count' | 'Item-Count'
 
@@ -8,7 +8,7 @@ export interface ITypedHttpResponse {
 	setStatus(code: TStatusCode): ITypedHttpResponse
 	setStandardHeader(header: TStandardHeader): ITypedHttpResponse
 	setCustomHeader(name: TCustomHeaderName, value: string): ITypedHttpResponse
-	setBody<T extends object>(body: T): void
+	setBody<B extends object>(body: B): void
 }
 
 export class TypedHttpResponse implements ITypedHttpResponse {
@@ -39,7 +39,7 @@ export class TypedHttpResponse implements ITypedHttpResponse {
 		return this
 	}
 
-	public setBody<T extends object>(body: T): void {
+	public setBody<B extends object>(body: B): void {
 		this.httpResponse.setBody(JSON.stringify(body))
 	}
 }

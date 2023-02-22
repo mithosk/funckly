@@ -7,43 +7,39 @@ const application = new Application(5000)
 
 ### ... how to create a funckly CONTROLLER ...
 ```ts
-export interface MyModel {
+interface MyModel {
     cat: string
-    dog: number
-    tiger: string
+    dog?: number
+    tiger?: string
 }
 
-export interface MyFilter {
+interface MyFilter {
     lion: boolean
     crocodile: number
 }
 
-export class MyController implements IController<MyModel, MyFilter> {
-    public async create(
-        model: MyModel,
-        identifiers: { [name: string]: string }
-    ): Promise<MyModel> { }
+class MyController implements IController<MyModel, MyFilter> {
 
-    public async read(
-        identifiers: { [name: string]: string }
-    ): Promise<MyModel> { }
+    public async create(input: ICreateInput<MyModel>): Promise<MyModel> { 
+        // my code
+    }
 
-    public async update(
-        identifiers: { [name: string]: string },
-        model: MyModel
-    ): Promise<MyModel> { }
+    public async read(input: IReadInput): Promise<MyModel> { 
+        // my code
+    }
 
-    public async delete(
-        identifiers: { [name: string]: string }
-    ): Promise<void> { }
+    public async update(input: IUpdateInput<MyModel>): Promise<MyModel> { 
+        // my code
+    }
 
-    public async list(
-        identifiers: { [name: string]: string },
-        filter: MyFilter,
-        sortType: string,
-        pageIndex: number,
-        pageSize: number
-    ): Promise<IPage<MyModel>> { }
+    public async delete(input: IDeleteInput): Promise<void> { 
+        // my code
+    }
+
+    public async list(input: IListInput<MyFilter>): Promise<IPage<MyModel>> { 
+        // my code    
+    }
+    
 }
 ```
 

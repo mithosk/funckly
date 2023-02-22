@@ -1,15 +1,14 @@
 import { IPage } from './page'
+import { IReadInput } from './read-input'
+import { IListInput } from './list-input'
+import { IUpdateInput } from './update-input'
+import { ICreateInput } from './create-input'
+import { IDeleteInput } from './delete-input'
 
 export interface IController<M extends object, F extends object> {
-	create(model: M, identifiers: { [name: string]: string }): Promise<M>
-	read(identifiers: { [name: string]: string }): Promise<M>
-	update(identifiers: { [name: string]: string }, model: M): Promise<M>
-	delete(identifiers: { [name: string]: string }): Promise<void>
-	list(
-		identifiers: { [name: string]: string },
-		filter: F,
-		sortType: string,
-		pageIndex: number,
-		pageSize: number
-	): Promise<IPage<M>>
+	create(input: ICreateInput<M>): Promise<M>
+	read(input: IReadInput): Promise<M>
+	update(input: IUpdateInput<M>): Promise<M>
+	delete(input: IDeleteInput): Promise<void>
+	list(input: IListInput<F>): Promise<IPage<M>>
 }

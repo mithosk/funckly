@@ -1,4 +1,5 @@
 import { IValidate } from './section/inspect/validate'
+import { IAuthorize } from './section/inspect/authorize'
 import { INormalize } from './section/inspect/normalize'
 import { HttpMethod } from './section/server/http-method'
 import { HttpMethodHandler } from './http-method-handler'
@@ -10,6 +11,7 @@ import { PrevalidationFormat } from './section/inspect/prevalidation-format'
 import { IPrevalidator, Prevalidator } from './section/inspect/prevalidator'
 
 export class RestUnit<M extends object, F extends object> {
+	private authorize: IAuthorize | undefined = undefined
 	private prevalidator: IPrevalidator | undefined = undefined
 	private validate: IValidate<M> | undefined = undefined
 	private normalize: INormalize<F> | undefined = undefined
@@ -18,7 +20,13 @@ export class RestUnit<M extends object, F extends object> {
 
 	public setController(createController: ICreateController<M, F>): RestUnit<M, F> {
 		this.server.subscribe(this.route, async (httpMethod, httpRequest, httpResponse) => {
-			const httpMethodHandler = new HttpMethodHandler(createController(), this.prevalidator, this.validate, this.normalize)
+			const httpMethodHandler = new HttpMethodHandler(
+				createController(),
+				this.authorize,
+				this.prevalidator,
+				this.validate,
+				this.normalize
+			)
 			const typedHttpRequest = new TypedHttpRequest(httpRequest)
 			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 
@@ -37,7 +45,13 @@ export class RestUnit<M extends object, F extends object> {
 		})
 
 		this.server.subscribe(this.route + '/{id}', async (httpMethod, httpRequest, httpResponse) => {
-			const httpMethodHandler = new HttpMethodHandler(createController(), this.prevalidator, this.validate, this.normalize)
+			const httpMethodHandler = new HttpMethodHandler(
+				createController(),
+				this.authorize,
+				this.prevalidator,
+				this.validate,
+				this.normalize
+			)
 			const typedHttpRequest = new TypedHttpRequest(httpRequest)
 			const typedHttpResponse = new TypedHttpResponse(httpResponse)
 
@@ -62,6 +76,12 @@ export class RestUnit<M extends object, F extends object> {
 					typedHttpResponse.setStatus(405).setStandardHeader('content-type-json').setBody(['method not allowed'])
 			}
 		})
+
+		return this
+	}
+
+	public setAuthorize(authorize: IAuthorize): RestUnit<M, F> {
+		this.authorize = authorize
 
 		return this
 	}

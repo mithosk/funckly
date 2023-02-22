@@ -14,7 +14,7 @@ export class HttpRequest {
 		return this.filter
 	}
 
-	public getHeader(name: string): string {
+	public getHeader(name: string): string | undefined {
 		return this.headers[name]
 	}
 

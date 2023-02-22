@@ -1,14 +1,14 @@
 import { HttpRequest } from './http-request'
 
-type TStringHeaderName = 'sort-type'
+type TStringHeaderName = 'authorization' | 'sort-type'
 type TIntHeaderName = 'page-index' | 'page-size'
 
 export interface ITypedHttpRequest {
 	getIdentifiers(): { [name: string]: string }
 	getFilter<F extends object>(): F
-	getStringHeader(name: TStringHeaderName): string
+	getStringHeader(name: TStringHeaderName): string | undefined
 	getIntHeader(name: TIntHeaderName): number | undefined
-	getBody<T extends object>(): T
+	getBody<B extends object>(): B
 }
 
 export class TypedHttpRequest implements ITypedHttpRequest {
@@ -22,20 +22,20 @@ export class TypedHttpRequest implements ITypedHttpRequest {
 		return JSON.parse(this.httpRequest.getFilter()) as F
 	}
 
-	public getStringHeader(name: TStringHeaderName): string {
+	public getStringHeader(name: TStringHeaderName): string | undefined {
 		return this.httpRequest.getHeader(name)
 	}
 
 	public getIntHeader(name: TIntHeaderName): number | undefined {
-		const value = parseInt(this.httpRequest.getHeader(name))
+		const value = parseInt(this.httpRequest.getHeader(name) ?? '')
 		return isNaN(value) ? undefined : value
 	}
 
-	public getBody<T extends object>(): T {
+	public getBody<B extends object>(): B {
 		try {
-			return JSON.parse(this.httpRequest.getBody()) as T
+			return JSON.parse(this.httpRequest.getBody()) as B
 		} catch {
-			return {} as T
+			return {} as B
 		}
 	}
 }
