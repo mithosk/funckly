@@ -40,7 +40,10 @@ export class RestUnit<M extends object, F extends object> {
 					break
 
 				default:
-					typedHttpResponse.setStatus(405).setStandardHeader('content-type-json').setBody(['method not allowed'])
+					typedHttpResponse
+						.setStatus(405)
+						.setStandardHeader('content-type-json')
+						.setAlertBody('method not allowed', undefined, undefined)
 			}
 		})
 
@@ -73,7 +76,10 @@ export class RestUnit<M extends object, F extends object> {
 					break
 
 				default:
-					typedHttpResponse.setStatus(405).setStandardHeader('content-type-json').setBody(['method not allowed'])
+					typedHttpResponse
+						.setStatus(405)
+						.setStandardHeader('content-type-json')
+						.setAlertBody('method not allowed', undefined, undefined)
 			}
 		})
 

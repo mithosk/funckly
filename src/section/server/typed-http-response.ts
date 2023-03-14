@@ -8,7 +8,8 @@ export interface ITypedHttpResponse {
 	setStatus(code: TStatusCode): ITypedHttpResponse
 	setStandardHeader(header: TStandardHeader): ITypedHttpResponse
 	setCustomHeader(name: TCustomHeaderName, value: string): ITypedHttpResponse
-	setBody<B extends object>(body: B): void
+	setObjectBody<B extends object>(body: B): void
+	setAlertBody(message: string, code: string | undefined, details: string[] | undefined): void
 }
 
 export class TypedHttpResponse implements ITypedHttpResponse {
@@ -39,7 +40,17 @@ export class TypedHttpResponse implements ITypedHttpResponse {
 		return this
 	}
 
-	public setBody<B extends object>(body: B): void {
+	public setObjectBody<B extends object>(body: B): void {
 		this.httpResponse.setBody(JSON.stringify(body))
+	}
+
+	public setAlertBody(message: string, code: string | undefined, details: string[] | undefined): void {
+		this.httpResponse.setBody(
+			JSON.stringify({
+				message,
+				code,
+				details
+			})
+		)
 	}
 }

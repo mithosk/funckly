@@ -1,6 +1,6 @@
 import { HttpRequest } from './http-request'
 
-type TStringHeaderName = 'authorization' | 'sort-type'
+type TStringHeaderName = 'authorization' | 'sort-by' | 'accept-language'
 type TIntHeaderName = 'page-index' | 'page-size'
 
 export interface ITypedHttpRequest {

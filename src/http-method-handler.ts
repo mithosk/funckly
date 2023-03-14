@@ -23,6 +23,7 @@ export class HttpMethodHandler<M extends object, F extends object> {
 	public async post(request: ITypedHttpRequest, response: ITypedHttpResponse): Promise<void> {
 		const identifiers = request.getIdentifiers()
 		const authorization = request.getStringHeader('authorization')
+		const language = request.getStringHeader('accept-language')
 		const model = request.getBody<M>()
 
 		const userId = this.authorize ? this.authorize(authorization, OperationType.Write) : undefined
@@ -31,14 +32,14 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		if (badRequestError) badRequestErrors.push(badRequestError)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setBody(['unauthorized'])
+			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestErrors.length > 0) {
-			response.setStatus(400).setStandardHeader('content-type-json').setBody(badRequestErrors)
+			response.setStatus(400).setStandardHeader('content-type-json').setAlertBody('bad request', undefined, badRequestErrors)
 		} else {
 			try {
-				const result = await this.controller.create({ identifiers, userId, model })
+				const result = await this.controller.create({ identifiers, userId, language, model })
 
-				response.setStatus(201).setStandardHeader('content-type-json').setBody(result)
+				response.setStatus(201).setStandardHeader('content-type-json').setObjectBody(result)
 			} catch (error) {
 				this.manageControllerError(error as Error, response)
 			}
@@ -48,19 +49,23 @@ export class HttpMethodHandler<M extends object, F extends object> {
 	public async getOne(request: ITypedHttpRequest, response: ITypedHttpResponse): Promise<void> {
 		const identifiers = request.getIdentifiers()
 		const authorization = request.getStringHeader('authorization')
+		const language = request.getStringHeader('accept-language')
 
 		const userId = this.authorize ? this.authorize(authorization, OperationType.Read) : undefined
 		const badRequestError = this.prevalidate(identifiers)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setBody(['unauthorized'])
+			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
-			response.setStatus(400).setStandardHeader('content-type-json').setBody([badRequestError])
+			response
+				.setStatus(400)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('bad request', undefined, [badRequestError])
 		} else {
 			try {
-				const result = await this.controller.read({ identifiers, userId })
+				const result = await this.controller.read({ identifiers, userId, language })
 
-				response.setStatus(200).setStandardHeader('content-type-json').setBody(result)
+				response.setStatus(200).setStandardHeader('content-type-json').setObjectBody(result)
 			} catch (error) {
 				this.manageControllerError(error as Error, response)
 			}
@@ -70,6 +75,7 @@ export class HttpMethodHandler<M extends object, F extends object> {
 	public async put(request: ITypedHttpRequest, response: ITypedHttpResponse): Promise<void> {
 		const identifiers = request.getIdentifiers()
 		const authorization = request.getStringHeader('authorization')
+		const language = request.getStringHeader('accept-language')
 		const model = request.getBody<M>()
 
 		const userId = this.authorize ? this.authorize(authorization, OperationType.Write) : undefined
@@ -78,14 +84,14 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		if (badRequestError) badRequestErrors.push(badRequestError)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setBody(['unauthorized'])
+			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestErrors.length > 0) {
-			response.setStatus(400).setStandardHeader('content-type-json').setBody(badRequestErrors)
+			response.setStatus(400).setStandardHeader('content-type-json').setAlertBody('bad request', undefined, badRequestErrors)
 		} else {
 			try {
-				const result = await this.controller.update({ identifiers, userId, model })
+				const result = await this.controller.update({ identifiers, userId, language, model })
 
-				response.setStatus(200).setStandardHeader('content-type-json').setBody(result)
+				response.setStatus(200).setStandardHeader('content-type-json').setObjectBody(result)
 			} catch (error) {
 				this.manageControllerError(error as Error, response)
 			}
@@ -95,28 +101,35 @@ export class HttpMethodHandler<M extends object, F extends object> {
 	public async patch(request: ITypedHttpRequest, response: ITypedHttpResponse): Promise<void> {
 		const identifiers = request.getIdentifiers()
 		const authorization = request.getStringHeader('authorization')
+		const language = request.getStringHeader('accept-language')
 		const partialModel = request.getBody<M>()
 
 		const userId = this.authorize ? this.authorize(authorization, OperationType.Write) : undefined
 		const badRequestError = this.prevalidate(identifiers)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setBody(['unauthorized'])
+			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
-			response.setStatus(400).setStandardHeader('content-type-json').setBody([badRequestError])
+			response
+				.setStatus(400)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('bad request', undefined, [badRequestError])
 		} else {
 			try {
-				const model = await this.controller.read({ identifiers, userId })
+				const model = await this.controller.read({ identifiers, userId, language })
 				this.copy(model, partialModel)
 
 				const badRequestErrors = this.validate ? this.validate(model).getErrors() : []
 
 				if (badRequestErrors.length > 0) {
-					response.setStatus(400).setStandardHeader('content-type-json').setBody(badRequestErrors)
+					response
+						.setStatus(400)
+						.setStandardHeader('content-type-json')
+						.setAlertBody('bad request', undefined, badRequestErrors)
 				} else {
-					const result = await this.controller.update({ identifiers, userId, model })
+					const result = await this.controller.update({ identifiers, userId, language, model })
 
-					response.setStatus(200).setStandardHeader('content-type-json').setBody(result)
+					response.setStatus(200).setStandardHeader('content-type-json').setObjectBody(result)
 				}
 			} catch (error) {
 				this.manageControllerError(error as Error, response)
@@ -132,9 +145,12 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		const badRequestError = this.prevalidate(identifiers)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setBody(['unauthorized'])
+			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
-			response.setStatus(400).setStandardHeader('content-type-json').setBody([badRequestError])
+			response
+				.setStatus(400)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('bad request', undefined, [badRequestError])
 		} else {
 			try {
 				await this.controller.delete({ identifiers, userId })
@@ -149,36 +165,34 @@ export class HttpMethodHandler<M extends object, F extends object> {
 	public async getMany(request: ITypedHttpRequest, response: ITypedHttpResponse): Promise<void> {
 		const identifiers = request.getIdentifiers()
 		const filter = request.getFilter<F>()
-		const sortType = request.getStringHeader('sort-type')
+		const joinedSortBy = request.getStringHeader('sort-by')
 		const pageIndex = request.getIntHeader('page-index')
 		const pageSize = request.getIntHeader('page-size')
 		const authorization = request.getStringHeader('authorization')
+		const language = request.getStringHeader('accept-language')
 
+		const sortBy = joinedSortBy ? joinedSortBy.split(',') : []
 		const userId = this.authorize ? this.authorize(authorization, OperationType.Write) : undefined
 		const badRequestError = this.prevalidate(identifiers)
 		if (this.normalize) this.normalize(new Normalizer(filter))
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setBody(['unauthorized'])
+			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
-			response.setStatus(400).setStandardHeader('content-type-json').setBody([badRequestError])
+			response
+				.setStatus(400)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('bad request', undefined, [badRequestError])
 		} else {
 			try {
-				const result = await this.controller.list({
-					identifiers,
-					filter,
-					sortType: sortType ? sortType.split(',') : [],
-					pageIndex,
-					pageSize,
-					userId
-				})
+				const result = await this.controller.list({ identifiers, filter, sortBy, pageIndex, pageSize, userId, language })
 
 				response
 					.setStatus(200)
 					.setStandardHeader('content-type-json')
 					.setCustomHeader('Page-Count', result.pageCount.toString())
 					.setCustomHeader('Item-Count', result.itemCount.toString())
-					.setBody(result.models)
+					.setObjectBody(result.models)
 			} catch (error) {
 				this.manageControllerError(error as Error, response)
 			}
@@ -197,13 +211,13 @@ export class HttpMethodHandler<M extends object, F extends object> {
 
 	private manageControllerError(error: Error, response: ITypedHttpResponse) {
 		if (error instanceof ForbiddenError) {
-			response.setStatus(403).setStandardHeader('content-type-json').setBody([error.message])
+			response.setStatus(403).setStandardHeader('content-type-json').setAlertBody(error.message, error.code, undefined)
 		} else if (error instanceof NotFoundError) {
-			response.setStatus(404).setStandardHeader('content-type-json').setBody([error.message])
+			response.setStatus(404).setStandardHeader('content-type-json').setAlertBody(error.message, undefined, undefined)
 		} else if (error instanceof MethodNotAllowedError) {
-			response.setStatus(405).setStandardHeader('content-type-json').setBody([error.message])
+			response.setStatus(405).setStandardHeader('content-type-json').setAlertBody(error.message, undefined, undefined)
 		} else {
-			response.setStatus(500).setStandardHeader('content-type-json').setBody([error.message])
+			response.setStatus(500).setStandardHeader('content-type-json').setAlertBody(error.message, undefined, undefined)
 		}
 	}
 

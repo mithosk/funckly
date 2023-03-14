@@ -67,7 +67,8 @@ describe('HttpMethodHandler', () => {
 			setStatus: jest.fn(),
 			setStandardHeader: jest.fn(),
 			setCustomHeader: jest.fn(),
-			setBody: jest.fn()
+			setObjectBody: jest.fn(),
+			setAlertBody: jest.fn()
 		}
 	})
 
