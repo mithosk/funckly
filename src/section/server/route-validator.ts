@@ -9,7 +9,8 @@ export class RouteValidator {
 
 			if (routePart.startsWith('{') && !routePart.endsWith('}')) return false
 
-			if (!regexp.test(routePart.startsWith('{') ? routePart.substring(1, routePart.length - 1) : routePart)) return false
+			if (!regexp.test(routePart.startsWith('{') ? routePart.substring(1, routePart.length - 1) : routePart))
+				return false
 		}
 
 		return route.indexOf('}/{') < 0

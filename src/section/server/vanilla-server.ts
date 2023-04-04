@@ -6,14 +6,18 @@ import { HttpResponse } from './http-response'
 import { RouteValidator } from './route-validator'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 
-export class VanillaServer {
+export interface IVanillaServer {
+	subscribe(route: string, httpRespond: IHttpRespond): void
+}
+
+export class VanillaServer implements IVanillaServer {
 	private readonly urlParser = new UrlParser()
 	private readonly routeValidator = new RouteValidator()
 	private readonly httpResponds: { [route: string]: IHttpRespond } = {}
 
 	constructor(port: number) {
 		createServer((im: IncomingMessage, sr: ServerResponse) => {
-			new Promise(() => {
+			new Promise<void>(resolve => {
 				sr.statusCode = 404
 
 				let body = ''
@@ -50,6 +54,8 @@ export class VanillaServer {
 
 					sr.end()
 				})
+
+				resolve()
 			})
 		}).listen(port)
 	}

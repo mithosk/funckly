@@ -3,7 +3,7 @@ import { IAuthorize } from './section/inspect/authorize'
 import { INormalize } from './section/inspect/normalize'
 import { HttpMethod } from './section/server/http-method'
 import { HttpMethodHandler } from './http-method-handler'
-import { VanillaServer } from './section/server/vanilla-server'
+import { IVanillaServer } from './section/server/vanilla-server'
 import { ICreateController } from './section/crud/create-controller'
 import { TypedHttpRequest } from './section/server/typed-http-request'
 import { TypedHttpResponse } from './section/server/typed-http-response'
@@ -16,7 +16,7 @@ export class RestUnit<M extends object, F extends object> {
 	private validate: IValidate<M> | undefined = undefined
 	private normalize: INormalize<F> | undefined = undefined
 
-	constructor(private readonly server: VanillaServer, private readonly route: string) {}
+	constructor(private readonly server: IVanillaServer, private readonly route: string) {}
 
 	public setController(createController: ICreateController<M, F>): RestUnit<M, F> {
 		this.server.subscribe(this.route, async (httpMethod, httpRequest, httpResponse) => {

@@ -1,6 +1,7 @@
 ### ... how to create a funckly APPLICATION ...
 ```ts
-const application = new Application(5000)
+const server = new VanillaServer(5000)
+const application = new Application(server)
 ```
 
 

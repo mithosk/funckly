@@ -47,7 +47,9 @@ export class Normalizer<F extends object> {
 	}
 
 	public asBoolean(key: keyof F): Normalizer<F> {
-		this.filter[key] = (this.filter[key] === 'true' ? true : this.filter[key] === 'false' ? false : undefined) as F[keyof F]
+		this.filter[key] = (
+			this.filter[key] === 'true' ? true : this.filter[key] === 'false' ? false : undefined
+		) as F[keyof F]
 
 		return this
 	}

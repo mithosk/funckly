@@ -8,7 +8,8 @@ export class UrlParser {
 		const urlParts = url.split('?')[0].split('/')
 
 		for (let i = 0; i < routeParts.length; i++)
-			if (routeParts[i].startsWith('{')) identifiers[routeParts[i].substring(1, routeParts[i].length - 1)] = urlParts[i + 1]
+			if (routeParts[i].startsWith('{'))
+				identifiers[routeParts[i].substring(1, routeParts[i].length - 1)] = urlParts[i + 1]
 
 		return identifiers
 	}

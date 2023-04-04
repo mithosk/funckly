@@ -34,7 +34,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		if (this.authorize && !userId) {
 			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestErrors.length > 0) {
-			response.setStatus(400).setStandardHeader('content-type-json').setAlertBody('bad request', undefined, badRequestErrors)
+			response
+				.setStatus(400)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('bad request', undefined, badRequestErrors)
 		} else {
 			try {
 				const result = await this.controller.create({ identifiers, userId, language, model })
@@ -86,7 +89,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		if (this.authorize && !userId) {
 			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestErrors.length > 0) {
-			response.setStatus(400).setStandardHeader('content-type-json').setAlertBody('bad request', undefined, badRequestErrors)
+			response
+				.setStatus(400)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('bad request', undefined, badRequestErrors)
 		} else {
 			try {
 				const result = await this.controller.update({ identifiers, userId, language, model })
@@ -185,7 +191,15 @@ export class HttpMethodHandler<M extends object, F extends object> {
 				.setAlertBody('bad request', undefined, [badRequestError])
 		} else {
 			try {
-				const result = await this.controller.list({ identifiers, filter, sortBy, pageIndex, pageSize, userId, language })
+				const result = await this.controller.list({
+					identifiers,
+					filter,
+					sortBy,
+					pageIndex,
+					pageSize,
+					userId,
+					language
+				})
 
 				response
 					.setStatus(200)

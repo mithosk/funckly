@@ -49,9 +49,9 @@ describe('RouteValidator', () => {
 		})
 
 		it('defines verified match with a correct url containing identifiers', () => {
-			expect(new RouteValidator().matchUrl('cat/{catId}/dog/{dogId}/tiger/{tigerId}', '/cat/123/dog/456/tiger/789')).toBe(
-				true
-			)
+			expect(
+				new RouteValidator().matchUrl('cat/{catId}/dog/{dogId}/tiger/{tigerId}', '/cat/123/dog/456/tiger/789')
+			).toBe(true)
 		})
 
 		it('defines verified match with a correct url containing filter', () => {
