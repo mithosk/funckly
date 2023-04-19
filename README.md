@@ -10,7 +10,7 @@ const application = new Application(server)
 ```ts
 interface MyModel {
     cat: string
-    dog?: number
+    dog?: number | null
     tiger: string
 }
 
