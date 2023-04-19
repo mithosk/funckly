@@ -1,9 +1,9 @@
 import { UrlParser } from './url-parser'
-import { HttpMethod } from './http-method'
 import { HttpRequest } from './http-request'
 import { IHttpRespond } from './http-respond'
 import { HttpResponse } from './http-response'
 import { RouteValidator } from './route-validator'
+import { HttpMethodParser } from './http-method-parser'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 
 export interface IVanillaServer {
@@ -13,6 +13,7 @@ export interface IVanillaServer {
 export class VanillaServer implements IVanillaServer {
 	private readonly urlParser = new UrlParser()
 	private readonly routeValidator = new RouteValidator()
+	private readonly httpMethodParser = new HttpMethodParser()
 	private readonly httpResponds: { [route: string]: IHttpRespond } = {}
 
 	constructor(port: number) {
@@ -30,7 +31,7 @@ export class VanillaServer implements IVanillaServer {
 					for (const route of Object.keys(this.httpResponds))
 						if (this.routeValidator.matchUrl(route, im.url ?? '')) {
 							//http method
-							const httpMethod = this.getHttpMethod(im.method ?? '')
+							const httpMethod = this.httpMethodParser.parse(im.method ?? '')
 
 							//http request
 							const identifiers = this.urlParser.getIdentifiers(im.url ?? '', route)
@@ -38,7 +39,7 @@ export class VanillaServer implements IVanillaServer {
 							const filter = this.urlParser.getFilter(im.url ?? '')
 
 							const headers: { [name: string]: string } = {}
-							for (const key of Object.keys(im.headers)) headers[key] = im.headers[key]?.toString() ?? ''
+							for (const key of Object.keys(im.headers)) headers[key] = im.headers[key.toLowerCase()]?.toString() ?? ''
 
 							body = body.replace(/\s/g, '')
 
@@ -64,27 +65,5 @@ export class VanillaServer implements IVanillaServer {
 		if (!this.routeValidator.checkRoute(route)) throw new Error('invalid route')
 
 		this.httpResponds[route] = httpRespond
-	}
-
-	private getHttpMethod(method: string): HttpMethod {
-		switch (method) {
-			case 'POST':
-				return HttpMethod.Post
-
-			case 'GET':
-				return HttpMethod.Get
-
-			case 'PUT':
-				return HttpMethod.Put
-
-			case 'PATCH':
-				return HttpMethod.Patch
-
-			case 'DELETE':
-				return HttpMethod.Delete
-
-			default:
-				return HttpMethod.Unknown
-		}
 	}
 }

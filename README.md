@@ -11,12 +11,12 @@ const application = new Application(server)
 interface MyModel {
     cat: string
     dog?: number
-    tiger?: string
+    tiger: string
 }
 
 interface MyFilter {
-    lion: boolean
-    crocodile: number
+    lion?: boolean
+    crocodile?: number
 }
 
 class MyController implements IController<MyModel, MyFilter> {
@@ -54,7 +54,9 @@ application.createRestUnit<MyModel, MyFilter>('horses')
     .setValidation(model =>
         new Validator(model)
             .notEmpty(model => model.cat, 'empty cat')
+            .isString(model => model.cat, 'cat is not string')
             .isFloat(model => model.dog, 'dog is not float')
+            .notEmpty(model => model.tiger, 'empty tiger')
             .isUuid(model => model.tiger, 'tiger is not UUID')
     )
     .setNormalization(normalizer =>
