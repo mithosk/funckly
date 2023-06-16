@@ -1,6 +1,6 @@
 ### ... how to create a funckly APPLICATION ...
 ```ts
-const server = new VanillaServer(5000)
+const server = new VanillaServer(5001)
 const application = new Application(server)
 ```
 
@@ -68,6 +68,41 @@ application.createRestUnit<MyModel, MyFilter>('horses')
 
 
 
+### ... how to create a funckly RPC UNIT ...
+```ts
+interface MyData {
+    cat: string
+    dog?: number | null
+    tiger: string
+}
+
+interface MyResult {
+    lion?: boolean
+    crocodile?: number
+}
+
+class MyResolver implements IResolver<MyData, MyResult> {
+
+    public async execute(input: IExecuteInput<MyData>): Promise<MyResult> {
+        // my code
+    }
+    
+}
+
+application.createRpcUnit<MyData, MyResult>('snake')
+    .setResolver(() => new MyResolver())
+    .setValidation(data =>
+        new Validator(data)
+            .notEmpty(data => data.cat, 'empty cat')
+            .isString(data => data.cat, 'cat is not string')
+            .isFloat(data => data.dog, 'dog is not float')
+            .notEmpty(data => data.tiger, 'empty tiger')
+            .isUuid(data => data.tiger, 'tiger is not UUID')
+    )
+```
+
+
+
 ### ... available http calls ...
 ```
 HTTP POST   /horses           (create)
@@ -76,4 +111,6 @@ HTTP PUT    /horses/12345     (update)
 HTTP PATCH  /horses/12345     (read & update)
 HTTP DELETE /horses/12345     (delete)
 HTTP GET    /horses?lion=true (list)
+
+HTTP POST   /snake            (execute)
 ```
