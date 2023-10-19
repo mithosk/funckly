@@ -2,28 +2,48 @@ import { RouteValidator } from './route-validator'
 
 describe('RouteValidator', () => {
 	describe('checkRoute', () => {
-		it('recognizes wrong route because have a too short part', () => {
-			expect(new RouteValidator().checkRoute('cat/do/tiger')).toBe(false)
+		it('recognizes wrong route because it start with slash character', () => {
+			expect(new RouteValidator().checkRoute('/cat/dog/tiger')).toBe(false)
+		})
+
+		it('recognizes wrong route because it end with slash character', () => {
+			expect(new RouteValidator().checkRoute('cat/dog/tiger/')).toBe(false)
+		})
+
+		it('recognizes wrong route because it contains an uppercase character', () => {
+			expect(new RouteValidator().checkRoute('cat/dog/Tiger')).toBe(false)
 		})
 
 		it('recognizes wrong route because it contains a number', () => {
 			expect(new RouteValidator().checkRoute('cat/dog2/tiger')).toBe(false)
 		})
 
-		it('recognizes wrong route because it start with illegal character', () => {
-			expect(new RouteValidator().checkRoute('/cat/dog/tiger')).toBe(false)
+		it('recognizes wrong route because an internal part start with minus character', () => {
+			expect(new RouteValidator().checkRoute('cat/-dog/tiger')).toBe(false)
 		})
 
-		it('recognizes wrong route because missing a character', () => {
+		it('recognizes wrong route because an internal part end with minus character', () => {
+			expect(new RouteValidator().checkRoute('cat/dog-/tiger')).toBe(false)
+		})
+
+		it('recognizes wrong route because it contains consecutive minus characters', () => {
+			expect(new RouteValidator().checkRoute('cat--dog')).toBe(false)
+		})
+
+		it('recognizes wrong route because an identifier missing end character', () => {
 			expect(new RouteValidator().checkRoute('cat/{id')).toBe(false)
 		})
 
-		it('recognizes wrong route because have consecutive identifiers', () => {
-			expect(new RouteValidator().checkRoute('cat/dog/{catId}/{dogId}')).toBe(false)
+		it('recognizes wrong route because an identifier missing start character', () => {
+			expect(new RouteValidator().checkRoute('cat/id}')).toBe(false)
 		})
 
 		it('recognizes a simple well format route as correct', () => {
 			expect(new RouteValidator().checkRoute('cat')).toBe(true)
+		})
+
+		it('recognizes a route with minus character as correct', () => {
+			expect(new RouteValidator().checkRoute('cat-dog')).toBe(true)
 		})
 
 		it('recognizes a complex well format route as correct', () => {
@@ -42,6 +62,10 @@ describe('RouteValidator', () => {
 
 		it('defines not verified match because the url is too long', () => {
 			expect(new RouteValidator().matchUrl('cat', '/cat/dog')).toBe(false)
+		})
+
+		it('defines not verified match because the url end with slash character', () => {
+			expect(new RouteValidator().matchUrl('cat', '/cat/')).toBe(false)
 		})
 
 		it('defines verified match because the url is equal to the route', () => {
