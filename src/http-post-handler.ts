@@ -21,7 +21,10 @@ export class HttpPostHandler<D extends object, R extends object> {
 		const badRequestErrors = this.validate ? this.validate(data).getErrors() : []
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
+			response
+				.setStatus(401)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestErrors.length > 0) {
 			response
 				.setStatus(400)
@@ -40,9 +43,15 @@ export class HttpPostHandler<D extends object, R extends object> {
 
 	private manageResolverError(error: Error, response: ITypedHttpResponse) {
 		if (error instanceof ExecuteError) {
-			response.setStatus(403).setStandardHeader('content-type-json').setAlertBody(error.message, error.code, undefined)
+			response
+				.setStatus(403)
+				.setStandardHeader('content-type-json')
+				.setAlertBody(error.message, error.code, undefined)
 		} else {
-			response.setStatus(500).setStandardHeader('content-type-json').setAlertBody(error.message, undefined, undefined)
+			response
+				.setStatus(500)
+				.setStandardHeader('content-type-json')
+				.setAlertBody(error.message, undefined, undefined)
 		}
 	}
 }

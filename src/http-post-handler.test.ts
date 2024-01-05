@@ -28,6 +28,7 @@ describe('HttpPostHandler', () => {
 		}
 
 		validator = {
+			notAllowed: jest.fn(),
 			notEmpty: jest.fn(),
 			isString: jest.fn(),
 			mustLength: jest.fn(),

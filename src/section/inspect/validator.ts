@@ -2,6 +2,7 @@ import { IValue } from './value'
 import { RegExpContainer } from './reg-exp-container'
 
 export interface IValidator<B extends object> {
+	notAllowed<V>(value: IValue<B, V>, message: string): IValidator<B>
 	notEmpty<V>(value: IValue<B, V>, message: string): IValidator<B>
 	isString<V>(value: IValue<B, V>, message: string): IValidator<B>
 	mustLength<V>(value: IValue<B, V>, min: number, max: number, message: string): IValidator<B>
@@ -22,6 +23,14 @@ export class Validator<B extends object> implements IValidator<B> {
 	private readonly rec = new RegExpContainer()
 
 	constructor(private readonly body: B) {}
+
+	public notAllowed<V>(value: IValue<B, V>, message: string): IValidator<B> {
+		const v = value(this.body)
+
+		if (v !== undefined) this.errors.push(message)
+
+		return this
+	}
 
 	public notEmpty<V>(value: IValue<B, V>, message: string): IValidator<B> {
 		const v = value(this.body)
@@ -51,7 +60,8 @@ export class Validator<B extends object> implements IValidator<B> {
 	public isUuid<V>(value: IValue<B, V>, message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined) if (typeof v !== 'string' || !this.rec.uuid(v)) this.errors.push(message)
+		if (v !== null && v !== undefined)
+			if (typeof v !== 'string' || !this.rec.uuid(v)) this.errors.push(message)
 
 		return this
 	}
@@ -59,7 +69,8 @@ export class Validator<B extends object> implements IValidator<B> {
 	public isDate<V>(value: IValue<B, V>, message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined) if (typeof v !== 'string' || !this.rec.date(v)) this.errors.push(message)
+		if (v !== null && v !== undefined)
+			if (typeof v !== 'string' || !this.rec.date(v)) this.errors.push(message)
 
 		return this
 	}
@@ -67,7 +78,8 @@ export class Validator<B extends object> implements IValidator<B> {
 	public isEmail<V>(value: IValue<B, V>, message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined) if (typeof v !== 'string' || !this.rec.email(v)) this.errors.push(message)
+		if (v !== null && v !== undefined)
+			if (typeof v !== 'string' || !this.rec.email(v)) this.errors.push(message)
 
 		return this
 	}
@@ -75,7 +87,8 @@ export class Validator<B extends object> implements IValidator<B> {
 	public isEnum<V>(value: IValue<B, V>, members: string[], message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined) if (typeof v !== 'string' || members.indexOf(v) < 0) this.errors.push(message)
+		if (v !== null && v !== undefined)
+			if (typeof v !== 'string' || members.indexOf(v) < 0) this.errors.push(message)
 
 		return this
 	}
@@ -83,7 +96,8 @@ export class Validator<B extends object> implements IValidator<B> {
 	public isInt<V>(value: IValue<B, V>, message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined) if (typeof v !== 'number' || !Number.isInteger(v)) this.errors.push(message)
+		if (v !== null && v !== undefined)
+			if (typeof v !== 'number' || !Number.isInteger(v)) this.errors.push(message)
 
 		return this
 	}
@@ -99,7 +113,8 @@ export class Validator<B extends object> implements IValidator<B> {
 	public mustRange<V>(value: IValue<B, V>, min: number, max: number, message: string): IValidator<B> {
 		const v = value(this.body)
 
-		if (v !== null && v !== undefined && typeof v === 'number') if (v < min || v > max) this.errors.push(message)
+		if (v !== null && v !== undefined && typeof v === 'number')
+			if (v < min || v > max) this.errors.push(message)
 
 		return this
 	}

@@ -32,7 +32,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		if (badRequestError) badRequestErrors.push(badRequestError)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
+			response
+				.setStatus(401)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestErrors.length > 0) {
 			response
 				.setStatus(400)
@@ -58,7 +61,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		const badRequestError = this.prevalidate(identifiers)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
+			response
+				.setStatus(401)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
 			response
 				.setStatus(400)
@@ -87,7 +93,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		if (badRequestError) badRequestErrors.push(badRequestError)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
+			response
+				.setStatus(401)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestErrors.length > 0) {
 			response
 				.setStatus(400)
@@ -114,7 +123,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		const badRequestError = this.prevalidate(identifiers)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
+			response
+				.setStatus(401)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
 			response
 				.setStatus(400)
@@ -151,7 +163,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		const badRequestError = this.prevalidate(identifiers)
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
+			response
+				.setStatus(401)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
 			response
 				.setStatus(400)
@@ -183,7 +198,10 @@ export class HttpMethodHandler<M extends object, F extends object> {
 		if (this.normalize) this.normalize(new Normalizer(filter))
 
 		if (this.authorize && !userId) {
-			response.setStatus(401).setStandardHeader('content-type-json').setAlertBody('unauthorized', undefined, undefined)
+			response
+				.setStatus(401)
+				.setStandardHeader('content-type-json')
+				.setAlertBody('unauthorized', undefined, undefined)
 		} else if (badRequestError) {
 			response
 				.setStatus(400)
@@ -225,13 +243,25 @@ export class HttpMethodHandler<M extends object, F extends object> {
 
 	private manageControllerError(error: Error, response: ITypedHttpResponse) {
 		if (error instanceof ForbiddenError) {
-			response.setStatus(403).setStandardHeader('content-type-json').setAlertBody(error.message, error.code, undefined)
+			response
+				.setStatus(403)
+				.setStandardHeader('content-type-json')
+				.setAlertBody(error.message, error.code, undefined)
 		} else if (error instanceof NotFoundError) {
-			response.setStatus(404).setStandardHeader('content-type-json').setAlertBody(error.message, undefined, undefined)
+			response
+				.setStatus(404)
+				.setStandardHeader('content-type-json')
+				.setAlertBody(error.message, undefined, undefined)
 		} else if (error instanceof MethodNotAllowedError) {
-			response.setStatus(405).setStandardHeader('content-type-json').setAlertBody(error.message, undefined, undefined)
+			response
+				.setStatus(405)
+				.setStandardHeader('content-type-json')
+				.setAlertBody(error.message, undefined, undefined)
 		} else {
-			response.setStatus(500).setStandardHeader('content-type-json').setAlertBody(error.message, undefined, undefined)
+			response
+				.setStatus(500)
+				.setStandardHeader('content-type-json')
+				.setAlertBody(error.message, undefined, undefined)
 		}
 	}
 

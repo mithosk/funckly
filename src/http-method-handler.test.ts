@@ -40,6 +40,7 @@ describe('HttpMethodHandler', () => {
 		}
 
 		validator = {
+			notAllowed: jest.fn(),
 			notEmpty: jest.fn(),
 			isString: jest.fn(),
 			mustLength: jest.fn(),
@@ -79,7 +80,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, () => validator, undefined).post(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, () => validator, undefined).post(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(201)
@@ -90,7 +94,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, () => validator, undefined).post(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, () => validator, undefined).post(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(400)
@@ -101,7 +108,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).post(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).post(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(401)
@@ -114,7 +124,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).post(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).post(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(403)
@@ -127,7 +140,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).post(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).post(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(405)
@@ -140,7 +156,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).post(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).post(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(500)
@@ -153,7 +172,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).getOne(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).getOne(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(200)
@@ -164,7 +186,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, prevalidator, undefined, undefined).getOne(request, response)
+			await new HttpMethodHandler(controller, undefined, prevalidator, undefined, undefined).getOne(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(400)
@@ -175,7 +200,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).getOne(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).getOne(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(401)
@@ -188,7 +216,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getOne(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getOne(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(404)
@@ -201,7 +232,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getOne(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getOne(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(405)
@@ -214,7 +248,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getOne(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getOne(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(500)
@@ -228,7 +265,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, () => validator, undefined).put(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, () => validator, undefined).put(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(200)
@@ -239,7 +279,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, () => validator, undefined).put(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, () => validator, undefined).put(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(400)
@@ -250,7 +293,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).put(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).put(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(401)
@@ -263,7 +309,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(403)
@@ -276,7 +325,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(404)
@@ -289,7 +341,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(405)
@@ -302,7 +357,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).put(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(500)
@@ -318,7 +376,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, () => validator, undefined).patch(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, () => validator, undefined).patch(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(200)
@@ -331,7 +392,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, () => validator, undefined).patch(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, () => validator, undefined).patch(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(400)
@@ -342,7 +406,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).patch(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).patch(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(401)
@@ -355,7 +422,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(403)
@@ -368,7 +438,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(404)
@@ -381,7 +454,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(405)
@@ -396,7 +472,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).patch(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(500)
@@ -407,7 +486,10 @@ describe('HttpMethodHandler', () => {
 		it('sets the status to 204', async () => {
 			const authorize = jest.fn().mockReturnValue('ABCD1234')
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).delete(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).delete(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(204)
@@ -418,7 +500,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, prevalidator, undefined, undefined).delete(request, response)
+			await new HttpMethodHandler(controller, undefined, prevalidator, undefined, undefined).delete(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(400)
@@ -429,7 +514,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).delete(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).delete(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(401)
@@ -442,7 +530,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(403)
@@ -455,7 +546,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(404)
@@ -468,7 +562,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(405)
@@ -481,7 +578,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).delete(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(500)
@@ -497,7 +597,10 @@ describe('HttpMethodHandler', () => {
 			response.setStandardHeader.mockReturnValue(response)
 			response.setCustomHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, normalize).getMany(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, normalize).getMany(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(200)
@@ -508,7 +611,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, prevalidator, undefined, undefined).getMany(request, response)
+			await new HttpMethodHandler(controller, undefined, prevalidator, undefined, undefined).getMany(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(400)
@@ -519,7 +625,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).getMany(request, response)
+			await new HttpMethodHandler(controller, authorize, undefined, undefined, undefined).getMany(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(401)
@@ -532,7 +641,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getMany(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getMany(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(405)
@@ -545,7 +657,10 @@ describe('HttpMethodHandler', () => {
 			response.setStatus.mockReturnValue(response)
 			response.setStandardHeader.mockReturnValue(response)
 
-			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getMany(request, response)
+			await new HttpMethodHandler(controller, undefined, undefined, undefined, undefined).getMany(
+				request,
+				response
+			)
 
 			expect(response.setStatus).toBeCalledTimes(1)
 			expect(response.setStatus).toBeCalledWith(500)

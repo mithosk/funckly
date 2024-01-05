@@ -1,6 +1,38 @@
 import { Validator } from './validator'
 
 describe('Validator', () => {
+	describe('notAllowed', () => {
+		it('finds not allowed fields', () => {
+			const body = {
+				cat: 'aaa',
+				dog: 123.45,
+				tiger: true,
+				lion: [],
+				crocodile: null
+			}
+
+			const errors = new Validator(body)
+				.notAllowed(body => body.cat, 'xxx')
+				.notAllowed(body => body.dog, 'yyy')
+				.notAllowed(body => body.tiger, 'zzz')
+				.notAllowed(body => body.lion, 'kkk')
+				.notAllowed(body => body.crocodile, 'www')
+				.getErrors()
+
+			expect(errors).toEqual(['xxx', 'yyy', 'zzz', 'kkk', 'www'])
+		})
+
+		it('finds no errors', () => {
+			const body = {
+				cat: undefined
+			}
+
+			const errors = new Validator(body).notAllowed(body => body.cat, 'xxx').getErrors()
+
+			expect(errors).toEqual([])
+		})
+	})
+
 	describe('notEmpty', () => {
 		it('recognizes null and undefined as empty', () => {
 			const body = {
@@ -94,8 +126,10 @@ describe('Validator', () => {
 			const body = {
 				cat: 145,
 				dog: 1.23,
-				tiger: [],
-				lion: {}
+				tiger: false,
+				lion: [],
+				crocodile: {},
+				horse: null
 			}
 
 			const errors = new Validator(body)
@@ -103,6 +137,8 @@ describe('Validator', () => {
 				.mustLength(body => body.dog, 10, 14, 'yyy')
 				.mustLength(body => body.tiger, 10, 14, 'zzz')
 				.mustLength(body => body.lion, 10, 14, 'kkk')
+				.mustLength(body => body.crocodile, 10, 14, 'www')
+				.mustLength(body => body.horse, 10, 14, 'jjj')
 				.getErrors()
 
 			expect(errors).toEqual([])
@@ -273,8 +309,8 @@ describe('Validator', () => {
 			}
 
 			const errors = new Validator(body)
-				.isEnum(body => body.cat, [], 'xxx')
-				.isEnum(body => body.dog, [], 'yyy')
+				.isEnum(body => body.cat, ['ONE', 'TWO'], 'xxx')
+				.isEnum(body => body.dog, ['ONE', 'TWO'], 'yyy')
 				.getErrors()
 
 			expect(errors).toEqual(['xxx', 'yyy'])
@@ -285,7 +321,7 @@ describe('Validator', () => {
 				cat: 'aaa'
 			}
 
-			const errors = new Validator(body).isEnum(body => body.cat, [], 'xxx').getErrors()
+			const errors = new Validator(body).isEnum(body => body.cat, ['ONE', 'TWO'], 'xxx').getErrors()
 
 			expect(errors).toEqual(['xxx'])
 		})
@@ -434,13 +470,15 @@ describe('Validator', () => {
 			const body = {
 				cat: 'aaa',
 				dog: [],
-				tiger: {}
+				tiger: {},
+				lion: null
 			}
 
 			const errors = new Validator(body)
 				.mustRange(body => body.cat, 10, 14, 'xxx')
 				.mustRange(body => body.dog, 10, 14, 'yyy')
 				.mustRange(body => body.tiger, 10, 14, 'zzz')
+				.mustRange(body => body.lion, 10, 14, 'kkk')
 				.getErrors()
 
 			expect(errors).toEqual([])

@@ -1,6 +1,6 @@
 {
   "name": "funckly",
-  "version": "1.10.20",
+  "version": "2.1.5",
   "description": "Simple Web API Framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

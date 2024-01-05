@@ -39,7 +39,8 @@ export class VanillaServer implements IVanillaServer {
 							const filter = this.urlParser.getFilter(im.url ?? '')
 
 							const headers: { [name: string]: string } = {}
-							for (const key of Object.keys(im.headers)) headers[key] = im.headers[key.toLowerCase()]?.toString() ?? ''
+							for (const key of Object.keys(im.headers))
+								headers[key] = im.headers[key.toLowerCase()]?.toString() ?? ''
 
 							body = body.replace(/\s/g, '')
 
